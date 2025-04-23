@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:tech_app/Widgets/data-tabel.dart';
 import 'package:tech_app/cubits/get-ticket-cubits.dart';
 import 'package:tech_app/models/ticket-model.dart';
+import 'package:tech_app/screens/ticket-details.dart';
 import 'package:tech_app/util/colors.dart';
 import 'package:tech_app/util/responsive-helper.dart';
 
@@ -44,6 +45,22 @@ class _TicketsListState extends State<TicketsList> {
       case 2: return 'Resolved';
       case 3: return 'Closed';
       default: return 'Unknown';
+    }
+  }
+
+  Future<void> _navigateToTicketDetails(BuildContext context, int ticketId) async {
+    try {
+      final ticketDetails = await context.read<TicketsCubit>().getTicketDetails(ticketId);
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => TicketDetailsScreen(ticket: ticketDetails),
+        ),
+      );
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Failed to load ticket details: $e')),
+      );
     }
   }
 
@@ -95,7 +112,7 @@ class _TicketsListState extends State<TicketsList> {
                   ),
                 ),
                 child: GestureDetector(
-                  onTap: () {},
+                  onTap: () => _navigateToTicketDetails(context, ticket.id),
                   child: DataTableWidget(
                     title: ticket.title,
                     userName: ticket.user.name,
@@ -108,11 +125,10 @@ class _TicketsListState extends State<TicketsList> {
           ),
         ),
         SizedBox(height: 16),
-        if (!widget.isFiltered) // Only show pagination when not filtered
+        if (!widget.isFiltered)
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              // Only show Previous button if not on first page
               if (widget.currentPage > 1) ...[
                 ElevatedButton(
                   onPressed: () => context.read<TicketsCubit>().goToPage(widget.currentPage - 1),
@@ -123,15 +139,11 @@ class _TicketsListState extends State<TicketsList> {
                 ),
                 SizedBox(width: 16),
               ],
-              
               Text(
                 'Page ${widget.currentPage} of ${widget.lastPage}',
                 style: TextStyle(fontSize: 16, color: ColorsHelper.darkGrey),
               ),
-              
               SizedBox(width: 16),
-              
-              // Always show Next button (disabled when on last page)
               ElevatedButton(
                 onPressed: widget.currentPage < widget.lastPage
                     ? () => context.read<TicketsCubit>().goToPage(widget.currentPage + 1)

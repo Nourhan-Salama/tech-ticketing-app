@@ -116,10 +116,13 @@ class TicketDetailsScreen extends StatelessWidget {
 
             // Service Section
             _buildDetailRow('Service:', ticket.serviceName),
+              // Manager Section (if exists)
+            if (ticket.managerName != null)
+              _buildDetailRow('Manager:', ticket.managerName!),
 
             // Technician Section (if exists)
-            if (ticket.technicianName != null)
-              _buildDetailRow('Technician:', ticket.technicianName!),
+            // if (ticket.technicianName != null)
+            //   _buildDetailRow('Technician:', ticket.technicianName!),
           ],
         ),
       ),

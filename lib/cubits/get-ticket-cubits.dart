@@ -1,5 +1,6 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:tech_app/cubits/ticket-state.dart';
+import 'package:tech_app/models/ticket-details-model.dart';
 import 'package:tech_app/models/ticket-model.dart';
 import 'package:tech_app/services/ticket-service.dart';
 
@@ -62,6 +63,16 @@ class TicketsCubit extends Cubit<TicketsState> {
       emit(TicketsError("Failed to load tickets: ${e.toString()}"));
     } finally {
       _isLoading = false;
+    }
+  }
+
+  Future<TicketDetailsModel> getTicketDetails(int ticketId) async {
+    try {
+      print('🔍 Fetching details for ticket ID: $ticketId');
+      return await _ticketService.getTicketDetails(ticketId);
+    } catch (e) {
+      print('❌ Error fetching ticket details: $e');
+      rethrow;
     }
   }
 
