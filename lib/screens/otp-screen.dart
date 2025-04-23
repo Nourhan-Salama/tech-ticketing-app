@@ -1,17 +1,18 @@
-import 'package:final_app/Helper/Custom-big-button.dart';
-import 'package:final_app/Helper/enum-helper.dart';
-import 'package:final_app/Helper/resend-otp-button.dart';
-import 'package:final_app/Widgets/otp_input_field.dart';
-import 'package:final_app/cubits/otp-verification-cubit.dart';
-import 'package:final_app/cubits/otp-verification-state.dart';
-import 'package:final_app/screens/chande-password.dart';
-import 'package:final_app/screens/login.dart';
-import 'package:final_app/services/resend-otp-api.dart';
-import 'package:final_app/services/verify_user_auth.dart';
-import 'package:final_app/util/colors.dart';
-import 'package:final_app/util/responsive-helper.dart';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:tech_app/Helper/Custom-big-button.dart';
+import 'package:tech_app/Helper/enum-helper.dart';
+import 'package:tech_app/Helper/resend-otp-button.dart';
+import 'package:tech_app/Widgets/otp_input_field.dart';
+import 'package:tech_app/cubits/otp-verification-cubit.dart';
+import 'package:tech_app/cubits/otp-verification-state.dart';
+import 'package:tech_app/screens/chande-password.dart';
+import 'package:tech_app/screens/login.dart';
+import 'package:tech_app/services/resend-otp-api.dart';
+import 'package:tech_app/services/verify_user_auth.dart';
+import 'package:tech_app/util/colors.dart';
+import 'package:tech_app/util/responsive-helper.dart';
 
 class OtpVerificationPage extends StatelessWidget {
   static const routeName = '/otp-page';

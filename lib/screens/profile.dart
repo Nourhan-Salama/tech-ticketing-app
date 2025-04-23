@@ -1,5 +1,6 @@
-import 'package:final_app/Helper/app-bar.dart';
+
 import 'package:flutter/material.dart';
+import 'package:tech_app/Helper/app-bar.dart';
 
 class Profile extends StatelessWidget {
  static const routName = '/profile';

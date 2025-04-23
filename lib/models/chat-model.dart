@@ -1,4 +1,6 @@
-import 'package:final_app/models/message-model.dart';
+
+
+import 'package:tech_app/models/message-model.dart';
 
 class ChatModel {
   final String chatId;

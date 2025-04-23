@@ -1,13 +1,16 @@
-import 'package:final_app/Helper/Custom-big-button.dart';
-import 'package:final_app/Helper/custom-textField.dart';
-import 'package:final_app/Helper/enum-helper.dart';
-import 'package:final_app/cubits/rest-password-cubit.dart';
-import 'package:final_app/cubits/rest-password-state.dart';
-import 'package:final_app/screens/otp-screen.dart';
+
 import 'package:flutter/material.dart';
-import 'package:final_app/util/responsive-helper.dart';
+
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:final_app/services/send-forget-pass-api.dart';
+import 'package:tech_app/Helper/Custom-big-button.dart';
+import 'package:tech_app/Helper/custom-textField.dart';
+import 'package:tech_app/Helper/enum-helper.dart';
+import 'package:tech_app/cubits/rest-password-cubit.dart';
+import 'package:tech_app/cubits/rest-password-state.dart';
+import 'package:tech_app/screens/otp-screen.dart';
+import 'package:tech_app/services/send-forget-pass-api.dart';
+import 'package:tech_app/util/responsive-helper.dart';
+
 
 class ResetPasswordScreen extends StatelessWidget {
   static const String routeName = '/rest-password';
@@ -16,10 +19,10 @@ class ResetPasswordScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // نحاول نوصل للكيوبيت
+
     final maybeCubit = context.read<ResetPasswordCubit?>();
 
-    // لو مش موجود، نغلف الصفحة كلها بالكيوبيت
+
     if (maybeCubit == null) {
       final api = context.read<SendForgetPassApi>();
 

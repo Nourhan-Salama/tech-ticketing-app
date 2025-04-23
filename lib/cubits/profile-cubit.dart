@@ -1,8 +1,9 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:final_app/cubits/prpfile-state.dart';
-import 'package:final_app/services/service-profile.dart';
+import 'package:tech_app/cubits/prpfile-state.dart';
+import 'package:tech_app/services/service-profile.dart';
+
 
 class ProfileCubit extends Cubit<ProfileState> {
   final ProfileService profileService;

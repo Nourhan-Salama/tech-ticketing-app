@@ -1,9 +1,10 @@
-import 'package:final_app/util/colors.dart';
-import 'package:final_app/util/responsive-helper.dart';
+
 import 'package:flutter/material.dart';
+import 'package:tech_app/util/colors.dart';
+import 'package:tech_app/util/responsive-helper.dart';
 
 class DataTableWidget extends StatelessWidget {
-  final String description;
+  final String title;
   final String userName;
   final String status;
   final Color statusColor;
@@ -11,7 +12,7 @@ class DataTableWidget extends StatelessWidget {
 
   const DataTableWidget({
     super.key,
-    required this.description,
+    required this.title,
     required this.userName,
     required this.status,
     required this.statusColor,
@@ -31,7 +32,7 @@ class DataTableWidget extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                description,
+                title,
                 style: TextStyle(
                   fontWeight: FontWeight.w600,
                   fontSize: ResponsiveHelper.responsiveTextSize(

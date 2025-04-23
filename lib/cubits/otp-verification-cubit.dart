@@ -1,9 +1,10 @@
 import 'dart:async';
 import 'package:bloc/bloc.dart';
-import 'package:final_app/Helper/enum-helper.dart';
-import 'package:final_app/cubits/otp-verification-state.dart';
-import 'package:final_app/services/resend-otp-api.dart';
-import 'package:final_app/services/verify_user_auth.dart';
+import 'package:tech_app/Helper/enum-helper.dart';
+import 'package:tech_app/cubits/otp-verification-state.dart';
+import 'package:tech_app/services/resend-otp-api.dart';
+import 'package:tech_app/services/verify_user_auth.dart';
+
 
 class OtpCubit extends Cubit<OtpState> {
   final VerifyUserApi _verifyUserApi;

@@ -1,10 +1,12 @@
-import 'package:final_app/cubits/change-pass-cubit.dart';
-import 'package:final_app/cubits/change-pass-state.dart';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:final_app/Helper/Custom-big-button.dart';
-import 'package:final_app/util/responsive-helper.dart';
-import 'package:final_app/Helper/custom-textField.dart';
+import 'package:tech_app/Helper/Custom-big-button.dart';
+import 'package:tech_app/Helper/custom-textField.dart';
+import 'package:tech_app/cubits/change-pass-cubit.dart';
+import 'package:tech_app/cubits/change-pass-state.dart';
+import 'package:tech_app/util/responsive-helper.dart';
+
 
 class ChangePasswordScreen extends StatelessWidget {
   static const String routeName ='/change-password';

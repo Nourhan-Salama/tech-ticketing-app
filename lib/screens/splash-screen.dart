@@ -1,7 +1,8 @@
 import 'dart:async';
-import 'package:final_app/screens/login.dart';
-import 'package:final_app/util/colors.dart';
+
 import 'package:flutter/material.dart';
+import 'package:tech_app/screens/login.dart';
+import 'package:tech_app/util/colors.dart';
 
 
 class SplashScreen extends StatelessWidget {

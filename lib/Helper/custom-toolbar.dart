@@ -1,5 +1,6 @@
-import 'package:final_app/util/colors.dart';
+
 import 'package:flutter/material.dart';
+import 'package:tech_app/util/colors.dart';
 
 class CustomToolbar extends StatelessWidget {
   final VoidCallback onBoldToggle;
@@ -61,7 +62,7 @@ class CustomToolbar extends StatelessWidget {
           ),
           child: Icon(
             icon,
-            color: isActive ? ColorsHelper.darkBlue : Colors.grey[700], // ✅ الرمادي الغامق لجعلها واضحة
+            color: isActive ? ColorsHelper.darkBlue : Colors.grey[700], 
             size: 20,
           ),
         ),

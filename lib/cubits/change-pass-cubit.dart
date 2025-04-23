@@ -1,8 +1,9 @@
 import 'dart:convert';
-import 'package:final_app/cubits/change-pass-state.dart';
+
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:tech_app/cubits/change-pass-state.dart';
 
 class ChangePasswordCubit extends Cubit<ChangePasswordState> {
   final TextEditingController passwordController = TextEditingController();
@@ -13,7 +14,6 @@ class ChangePasswordCubit extends Cubit<ChangePasswordState> {
     confirmPasswordController.addListener(validatePasswords);
   }
 
-  /// ✅ التحقق من صحة كلمة المرور والتأكيد
   void validatePasswords() {
     final password = passwordController.text;
     final confirmPassword = confirmPasswordController.text;
@@ -26,14 +26,13 @@ class ChangePasswordCubit extends Cubit<ChangePasswordState> {
     emit(ChangePasswordValid(isValid));
   }
 
-  /// ✅ حذف البيانات بعد النجاح
+ 
   void clearFields() {
     passwordController.clear();
     confirmPasswordController.clear();
-    emit(ChangePasswordInitial()); // يرجع الحالة للبداية
+    emit(ChangePasswordInitial()); 
   }
 
-  /// ✅ إرسال الطلب لتغيير كلمة المرور
   Future<void> resetPassword({
     required String handle,
     required String verificationCode,
@@ -61,7 +60,7 @@ class ChangePasswordCubit extends Cubit<ChangePasswordState> {
       final responseData = jsonDecode(response.body);
 
       if (response.statusCode == 200) {
-        clearFields(); // 🟢 حذف البيانات بعد النجاح
+        clearFields(); 
         emit(ChangePasswordSuccess());
       } else {
         emit(ChangePasswordFailure(responseData['message']));

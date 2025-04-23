@@ -1,9 +1,11 @@
 import 'dart:io';
-import 'package:final_app/cubits/prpfile-state.dart';
-import 'package:final_app/util/colors.dart';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:final_app/cubits/profile-cubit.dart';
+import 'package:tech_app/cubits/profile-cubit.dart';
+import 'package:tech_app/cubits/prpfile-state.dart';
+import 'package:tech_app/util/colors.dart';
+
 
 class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
   final String title;

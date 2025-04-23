@@ -1,18 +1,20 @@
-import 'package:final_app/Helper/Custom-big-button.dart';
-import 'package:final_app/screens/user-dashboard.dart';
-import 'package:final_app/services/login-service.dart';
-import 'package:final_app/services/service-profile.dart';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:final_app/cubits/login-cubit.dart';
-import 'package:final_app/cubits/login-state.dart';
-import 'package:final_app/Helper/custom-textField.dart';
-import 'package:final_app/screens/rest-screen.dart';
-import 'package:final_app/screens/sign-up.dart';
-import 'package:final_app/util/colors.dart';
-import 'package:final_app/util/responsive-helper.dart';
+
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:http/http.dart' as http;
+import 'package:tech_app/Helper/Custom-big-button.dart';
+import 'package:tech_app/Helper/custom-textField.dart';
+import 'package:tech_app/cubits/login-cubit.dart';
+import 'package:tech_app/cubits/login-state.dart';
+import 'package:tech_app/screens/rest-screen.dart';
+
+import 'package:tech_app/screens/user-dashboard.dart';
+import 'package:tech_app/services/login-service.dart';
+import 'package:tech_app/services/service-profile.dart';
+import 'package:tech_app/util/colors.dart';
+import 'package:tech_app/util/responsive-helper.dart';
 
 
 class LoginScreen extends StatefulWidget {
@@ -143,8 +145,8 @@ class _LoginScreenState extends State<LoginScreen> {
           SizedBox(height: ResponsiveHelper.heightPercent(context, 0.02)),
           _buildRememberMeAndForgotPassword(context),
           SizedBox(height: ResponsiveHelper.heightPercent(context, 0.03)),
-          _buildSignUpLink(context),
-          SizedBox(height: ResponsiveHelper.heightPercent(context, 0.03)),
+        
+      
           _buildSignInButton(context),
         ],
       ),
@@ -231,34 +233,6 @@ class _LoginScreenState extends State<LoginScreen> {
             "Forget Password?",
             style: TextStyle(
               color: ColorsHelper.darkBlue,
-              fontSize: ResponsiveHelper.responsiveTextSize(context, 14),
-            ),
-          ),
-        ),
-      ],
-    );
-  }
-
-  Widget _buildSignUpLink(BuildContext context) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        Text(
-          "Don't have an account? ",
-          style: TextStyle(
-            fontSize: ResponsiveHelper.responsiveTextSize(context, 14),
-          ),
-        ),
-        GestureDetector(
-          onTap: () => Navigator.push(
-            context,
-            MaterialPageRoute(builder: (context) => SignUpScreen()),
-          ),
-          child: Text(
-            'Sign Up',
-            style: TextStyle(
-              color: ColorsHelper.darkBlue,
-              fontWeight: FontWeight.bold,
               fontSize: ResponsiveHelper.responsiveTextSize(context, 14),
             ),
           ),

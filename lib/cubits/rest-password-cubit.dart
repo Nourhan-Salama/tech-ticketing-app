@@ -1,6 +1,7 @@
 import 'package:bloc/bloc.dart';
-import 'package:final_app/cubits/rest-password-state.dart';
-import 'package:final_app/services/send-forget-pass-api.dart';
+import 'package:tech_app/cubits/rest-password-state.dart';
+import 'package:tech_app/services/send-forget-pass-api.dart';
+
 
 class ResetPasswordCubit extends Cubit<ResetPasswordState> {
   final SendForgetPassApi _api;

@@ -1,15 +1,17 @@
 import 'dart:io';
-import 'package:final_app/util/responsive-helper.dart';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:tech_app/Helper/Custom-big-button.dart';
+import 'package:tech_app/Helper/app-bar.dart';
+import 'package:tech_app/Helper/custom-textField.dart';
+import 'package:tech_app/Widgets/drawer.dart';
+import 'package:tech_app/cubits/profile-cubit.dart';
+import 'package:tech_app/cubits/prpfile-state.dart';
+import 'package:tech_app/util/responsive-helper.dart';
 
-import 'package:final_app/Helper/Custom-big-button.dart';
-import 'package:final_app/Helper/app-bar.dart';
-import 'package:final_app/Helper/custom-textField.dart';
-import 'package:final_app/Widgets/drawer.dart';
-import 'package:final_app/cubits/profile-cubit.dart';
-import 'package:final_app/cubits/prpfile-state.dart';
+
 
 class EditProfileScreen extends StatefulWidget {
   static const routeName = '/edit-profile';

@@ -1,52 +1,184 @@
-// ticket-model.dart
-import 'package:flutter/material.dart';
-
 class TicketModel {
-  final DateTime createdAt;
-  final String department;
-  final String email;
+  final int id;
+  final String title;
+  final int status;
   final String description;
-  final String firstName;
-  final String lastName;
-  final String status;
-  final Color statusColor;
+  final ServiceModel service;
+  final UserModel user;
+  final ManagerModel? manager;
+  final TechnicianModel? technician;
 
-   String get userName => '$firstName $lastName';
-   
   TicketModel({
-    DateTime? createdAt,
-    required this.department,
-    required this.email,
-    required this.description,
-    required this.firstName,
-    required this.lastName,
+    required this.id,
+    required this.title,
     required this.status,
-    required this.statusColor,
-  }) : createdAt = createdAt ?? DateTime.now();
+    required this.description,
+    required this.service,
+    required this.user,
+    this.manager,
+    this.technician,
+  });
 
-  factory TicketModel.fromMap(Map<String, dynamic> map) {
+  factory TicketModel.fromJson(Map<String, dynamic> json) {
     return TicketModel(
-      createdAt: DateTime.parse(map['createdAt']),
-      department: map['department'],
-      email: map['email'],
-      description: map['description'],
-      firstName: map['firstName'],
-       lastName: map['lastName'],
-      status: map['status'],
-      statusColor: Color(map['statusColor']),
+      id: json['id'] as int,
+      title: json['title'] as String,
+      status: json['status'] as int,
+      description: json['description'] as String,
+      service: ServiceModel.fromJson(json['service']),
+      user: UserModel.fromJson(json['user']),
+      manager: json['manager'] != null ? ManagerModel.fromJson(json['manager']) : null,
+      technician: json['technician'] != null ? TechnicianModel.fromJson(json['technician']) : null,
     );
   }
 
-  Map<String, dynamic> toMap() {
-    return {
-      'createdAt': createdAt.toIso8601String(),
-      'department': department,
-      'email': email,
-      'description': description,
-      'firstName': firstName,
-      'lastName': lastName,
-      'status': status,
-      'statusColor': statusColor.value,
-    };
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) return true;
+    return other is TicketModel && other.id == id;
+  }
+
+  @override
+  int get hashCode => id.hashCode;
+}
+
+class ServiceModel {
+  final int id;
+  final String name;
+
+  ServiceModel({required this.id, required this.name});
+
+  factory ServiceModel.fromJson(Map<String, dynamic> json) {
+    return ServiceModel(
+      id: json['id'] as int,
+      name: json['name'] as String,
+    );
   }
 }
+
+class UserModel {
+  final int id;
+  final String name;
+
+  UserModel({required this.id, required this.name});
+
+  factory UserModel.fromJson(Map<String, dynamic> json) {
+    return UserModel(
+      id: json['id'] as int,
+      name: json['name'] as String,
+    );
+  }
+}
+
+class ManagerModel {
+  final int id;
+  final UserModel user;
+
+  ManagerModel({required this.id, required this.user});
+
+  factory ManagerModel.fromJson(Map<String, dynamic> json) {
+    return ManagerModel(
+      id: json['id'] as int,
+      user: UserModel.fromJson(json['user']),
+    );
+  }
+}
+
+class TechnicianModel {
+  final int id;
+  final UserModel user;
+
+  TechnicianModel({required this.id, required this.user});
+
+  factory TechnicianModel.fromJson(Map<String, dynamic> json) {
+    return TechnicianModel(
+      id: json['id'] as int,
+      user: UserModel.fromJson(json['user']),
+    );
+  }
+}
+
+
+// // ticket-model.dart
+
+
+// class TicketModel {
+//   final int id;
+//   final String title;
+//   final int status;
+//   final String description;
+//   //final ServiceModel service;
+//   // final String firstName;
+//   // final String lastName;
+//   final UserModel user;
+//   final ManagerModel? manager;
+//   final TechnicianModel? technician;
+
+//   TicketModel({
+//     // required this.firstName,
+//     // required this.lastName,
+//     required this.id,
+//     required this.title,
+//     required this.status,
+//     required this.description,
+//    // required this.service,
+//     required this.user,
+//     this.manager,
+//     this.technician,
+//   });
+
+//   factory TicketModel.fromJson(Map<String, dynamic> json) {
+//     return TicketModel(
+//       id: json['id'] as int,
+//       title: json['title'] as String,
+//       status: json['status'] as int,
+//       description: json['description'] as String,
+//       //service: ServiceModel.fromJson(json['service']),
+//       user: UserModel.fromJson(json['user']),
+//       manager: json['manager'] != null ? ManagerModel.fromJson(json['manager']) : null,
+//       technician: json['technician'] != null ? TechnicianModel.fromJson(json['technician']) : null,
+//     );
+//   }
+// }
+
+// class UserModel {
+//   final int id;
+//   final String name;
+
+//   UserModel({required this.id, required this.name});
+
+//   factory UserModel.fromJson(Map<String, dynamic> json) {
+//     return UserModel(
+//       id: json['id'] as int,
+//       name: json['name'] as String,
+//     );
+//   }
+// }
+
+// class ManagerModel {
+//   final int id;
+//   final UserModel user;
+
+//   ManagerModel({required this.id, required this.user});
+
+//   factory ManagerModel.fromJson(Map<String, dynamic> json) {
+//     return ManagerModel(
+//       id: json['id'] as int,
+//       user: UserModel.fromJson(json['user']),
+//     );
+//   }
+// }
+
+// class TechnicianModel {
+//   final int id;
+//   final UserModel user;
+
+//   TechnicianModel({required this.id, required this.user});
+
+//   factory TechnicianModel.fromJson(Map<String, dynamic> json) {
+//     return TechnicianModel(
+//       id: json['id'] as int,
+//       user: UserModel.fromJson(json['user']),
+//     );
+//   }
+// }

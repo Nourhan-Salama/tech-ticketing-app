@@ -1,6 +1,7 @@
 
 import 'package:dio/dio.dart';
-import 'package:final_app/models/chat-model.dart';
+import 'package:tech_app/models/chat-model.dart';
+
 class ChatService {
   final Dio dio = Dio();
 Future<List<ChatModel>> fetchChats(String managerId) async {

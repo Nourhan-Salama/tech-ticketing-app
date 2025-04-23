@@ -1,8 +1,10 @@
-import 'package:final_app/Helper/app-bar.dart';
-import 'package:final_app/Widgets/drawer.dart';
+
 import 'package:flutter/material.dart';
-import 'package:final_app/Widgets/search-chat.dart';
-import 'package:final_app/screens/chat-screen.dart';
+import 'package:tech_app/Helper/app-bar.dart';
+import 'package:tech_app/Widgets/drawer.dart';
+import 'package:tech_app/Widgets/search-chat.dart';
+import 'package:tech_app/screens/chat-screen.dart';
+
 
 class ChatsPage extends StatefulWidget {
   static const routeName = '/chat';

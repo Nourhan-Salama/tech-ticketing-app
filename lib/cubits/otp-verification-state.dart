@@ -1,5 +1,6 @@
 import 'package:equatable/equatable.dart';
-import 'package:final_app/Helper/enum-helper.dart';
+import 'package:tech_app/Helper/enum-helper.dart';
+
 
 abstract class OtpState extends Equatable {
   const OtpState();

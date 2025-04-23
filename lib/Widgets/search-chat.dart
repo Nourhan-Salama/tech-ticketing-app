@@ -1,8 +1,10 @@
 import 'dart:io';
-import 'package:final_app/cubits/prpfile-state.dart';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:final_app/cubits/profile-cubit.dart';
+import 'package:tech_app/cubits/profile-cubit.dart';
+import 'package:tech_app/cubits/prpfile-state.dart';
+
 
 class SearchChat extends StatelessWidget {
   const SearchChat({super.key});

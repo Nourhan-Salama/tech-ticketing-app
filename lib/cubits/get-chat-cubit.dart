@@ -1,6 +1,7 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:final_app/models/chat-model.dart';
-import 'package:final_app/services/service-chat.dart';
+import 'package:tech_app/models/chat-model.dart';
+import 'package:tech_app/services/service-chat.dart';
+
 
 class ChatCubit extends Cubit<List<ChatModel>> {
   final ChatService chatService;

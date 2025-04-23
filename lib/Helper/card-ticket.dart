@@ -1,14 +1,17 @@
 import 'package:flutter/material.dart';
-import 'package:final_app/util/colors.dart';
-import 'package:final_app/util/responsive-helper.dart';
+import 'package:tech_app/util/colors.dart';
+import 'package:tech_app/util/responsive-helper.dart';
+
 
 class StatusCard extends StatelessWidget {
+  final IconData icon;
   final String title;
   final String value;
   final double percentage;
 
   const StatusCard({
     super.key,
+    required this.icon,
     required this.title,
     required this.value,
     required this.percentage,
@@ -121,7 +124,7 @@ class StatusCard extends StatelessWidget {
                           desktop: 8,
                         )),
                         Icon(
-                          Icons.airplane_ticket,
+                          icon,
                           color: ColorsHelper.LightGrey,
                           size: ResponsiveHelper.responsiveValue(
                             context: context,

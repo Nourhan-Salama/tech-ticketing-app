@@ -1,8 +1,10 @@
-import 'package:final_app/Helper/custom-toolbar.dart';
-import 'package:final_app/util/colors.dart';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:final_app/cubits/rich-text-cubit.dart';
+import 'package:tech_app/Helper/custom-toolbar.dart';
+import 'package:tech_app/cubits/rich-text-cubit.dart';
+import 'package:tech_app/util/colors.dart';
+
 
 class RichTextEditor extends StatefulWidget {
   final TextEditingController controller;

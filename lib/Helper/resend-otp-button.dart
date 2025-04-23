@@ -1,10 +1,12 @@
-import 'package:final_app/Helper/enum-helper.dart';
-import 'package:final_app/cubits/otp-verification-state.dart';
-import 'package:final_app/util/colors.dart';
-import 'package:final_app/util/responsive-helper.dart';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:final_app/cubits/otp-verification-cubit.dart';
+import 'package:tech_app/Helper/enum-helper.dart';
+import 'package:tech_app/cubits/otp-verification-cubit.dart';
+import 'package:tech_app/cubits/otp-verification-state.dart';
+import 'package:tech_app/util/colors.dart';
+import 'package:tech_app/util/responsive-helper.dart';
+
 
 class ResendOtpButton extends StatelessWidget {
   final String email;
