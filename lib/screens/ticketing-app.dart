@@ -8,6 +8,7 @@ import 'package:tech_app/cubits/change-pass-cubit.dart';
 import 'package:tech_app/cubits/creat-new-cubit.dart';
 import 'package:tech_app/cubits/get-ticket-cubits.dart';
 import 'package:tech_app/cubits/login-cubit.dart';
+import 'package:tech_app/cubits/notifications-cubit.dart';
 import 'package:tech_app/cubits/otp-verification-cubit.dart';
 import 'package:tech_app/cubits/profile-cubit.dart';
 import 'package:tech_app/cubits/rest-password-cubit.dart';
@@ -25,6 +26,7 @@ import 'package:tech_app/screens/rest-screen.dart';
 import 'package:tech_app/screens/splash-screen.dart';
 import 'package:tech_app/screens/user-dashboard.dart';
 import 'package:tech_app/services/login-service.dart';
+import 'package:tech_app/services/notifications-services.dart';
 import 'package:tech_app/services/resend-otp-api.dart';
 import 'package:tech_app/services/send-forget-pass-api.dart';
 import 'package:tech_app/services/service-profile.dart';
@@ -56,7 +58,7 @@ class TicketingApp extends StatelessWidget {
         ),
         RepositoryProvider(create: (_) => SendForgetPassApi()),
         RepositoryProvider(create: (_) => TicketService()),
-       // RepositoryProvider(create: (_) => const FlutterSecureStorage()),
+        RepositoryProvider(create: (_) => NotificationService()),
       ],
       child: Builder(
         builder: (context) {
@@ -75,7 +77,9 @@ class TicketingApp extends StatelessWidget {
               ),
               //BlocProvider(create: (_) => SignUpCubit()),
               BlocProvider(create: (_) => ChangePasswordCubit()),
+               BlocProvider(create: (context) => NotificationsCubit(context.read<NotificationService>())),
             ],
+            
             child: MaterialApp(
               debugShowCheckedModeBanner: false,
               initialRoute: SplashScreen.routeName,

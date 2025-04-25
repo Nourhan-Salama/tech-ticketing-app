@@ -1,20 +1,25 @@
 import 'dart:io';
 
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:tech_app/Widgets/notifications-badge.dart';
 import 'package:tech_app/cubits/profile-cubit.dart';
 import 'package:tech_app/cubits/prpfile-state.dart';
 import 'package:tech_app/util/colors.dart';
 
 
+
 class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
   final String title;
   final VoidCallback? onPressed;
+  final List<Widget>? actions;
 
   const CustomAppBar({
     super.key,
     required this.title,
     this.onPressed,
+    this.actions,
   });
 
   @override
@@ -78,7 +83,7 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
                   elevation: 2,
                   child: InkWell(
                     borderRadius: BorderRadius.circular(15),
-                    onTap: () => Scaffold.of(context).openDrawer(),
+                    onTap: onPressed ?? () => Scaffold.of(context).openDrawer(),
                     child: Container(
                       padding: const EdgeInsets.all(4),
                       decoration: BoxDecoration(
@@ -106,10 +111,8 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
           ),
         ),
         actions: [
-          IconButton(
-            onPressed: () {},
-            icon: const Icon(Icons.notifications, color: Colors.black),
-          ),
+          const NotificationBadge(),
+          if (actions != null) ...actions!,
         ],
       ),
     );

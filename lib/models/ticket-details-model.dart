@@ -54,7 +54,7 @@ class TicketDetailsModel {
       case 0: // Pending
         return Colors.grey;
       case 1: // In Progress
-        return Colors.blue;
+        return Colors.orange;
       case 2: // Resolved
         return Colors.green;
       case 3: // Closed

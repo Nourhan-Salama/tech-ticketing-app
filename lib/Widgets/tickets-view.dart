@@ -31,7 +31,7 @@ class _TicketsListState extends State<TicketsList> {
   Color _getStatusColor(int status) {
     switch (status) {
       case 0: return Colors.grey;
-      case 1: return Colors.blue;
+      case 1: return Colors.orange;
       case 2: return Colors.green;
       case 3: return Colors.red;
       default: return Colors.grey;
