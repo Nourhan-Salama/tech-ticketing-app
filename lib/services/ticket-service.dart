@@ -72,5 +72,27 @@ class TicketService {
       rethrow;
     }
   }
+
+  Future<bool> finishTicket(int ticketId) async {
+    try {
+      final headers = await _getAuthHeaders();
+      final url = Uri.parse('$_baseUrl/api/technicians/tickets/$ticketId/finish');
+      
+      print('🌐 Finishing ticket with ID: $ticketId');
+      final response = await http.post(url, headers: headers);
+      print('🔵 Response status: ${response.statusCode}');
+
+      if (response.statusCode == 200) {
+        final jsonData = json.decode(response.body);
+        print('✅ Ticket finished successfully: ${jsonData['message']}');
+        return true;
+      } else {
+        throw Exception('Failed to finish ticket: ${response.statusCode}');
+      }
+    } catch (e) {
+      print('❌ Error in finishTicket: $e');
+      rethrow;
+    }
+  }
 }
 

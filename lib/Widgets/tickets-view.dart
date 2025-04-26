@@ -4,6 +4,7 @@ import 'package:tech_app/Widgets/data-tabel.dart';
 import 'package:tech_app/cubits/get-ticket-cubits.dart';
 import 'package:tech_app/models/ticket-model.dart';
 import 'package:tech_app/screens/ticket-details.dart';
+import 'package:tech_app/services/ticket-service.dart';
 import 'package:tech_app/util/colors.dart';
 import 'package:tech_app/util/responsive-helper.dart';
 
@@ -64,6 +65,29 @@ class _TicketsListState extends State<TicketsList> {
     }
   }
 
+  Future<void> _finishTicket(BuildContext context, int ticketId) async {
+    try {
+      final success = await TicketService().finishTicket(ticketId);
+      if (success) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Ticket closed successfully'),
+            backgroundColor: Colors.green,
+          ),
+        );
+        // Refresh the tickets list
+        context.read<TicketsCubit>().goToPage(widget.currentPage);
+      }
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Failed to close ticket: ${e.toString()}'),
+          backgroundColor: Colors.red,
+        ),
+      );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     if (widget.tickets.isEmpty) {
@@ -111,14 +135,20 @@ class _TicketsListState extends State<TicketsList> {
                     desktop: 16,
                   ),
                 ),
-                child: GestureDetector(
-                  onTap: () => _navigateToTicketDetails(context, ticket.id),
-                  child: DataTableWidget(
-                    title: ticket.title,
-                    userName: ticket.user.name,
-                    status: _getStatusText(ticket.status),
-                    statusColor: _getStatusColor(ticket.status),
-                  ),
+                child: DataTableWidget(
+                  title: ticket.title,
+                  userName: ticket.user.name,
+                  status: _getStatusText(ticket.status),
+                  statusColor: _getStatusColor(ticket.status),
+                  ticketId: ticket.id,
+                  showDivider: index < widget.tickets.length - 1,
+                  onChatPressed: () {
+                    // Implement chat functionality if needed
+                    // Navigator.push(context, MaterialPageRoute(
+                    //   builder: (context) => ChatScreen(ticketId: ticket.id),
+                    // ));
+                  },
+                  onFinishPressed: () => _finishTicket(context, ticket.id),
                 ),
               );
             },
