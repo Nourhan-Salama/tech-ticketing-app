@@ -1,4 +1,3 @@
-
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -6,6 +5,7 @@ import 'package:intl/intl.dart';
 import 'package:tech_app/cubits/notifications-cubit.dart';
 import 'package:tech_app/cubits/notifications-stae.dart';
 import 'package:tech_app/models/notifications-model.dart';
+import 'package:tech_app/util/colors.dart';
 
 class NotificationsScreen extends StatelessWidget {
   const NotificationsScreen({Key? key}) : super(key: key);
@@ -31,9 +31,9 @@ class NotificationsScreen extends StatelessWidget {
       body: BlocConsumer<NotificationsCubit, NotificationsState>(
         listener: (context, state) {
           if (state is NotificationsError) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(content: Text(state.message),
-            )  );
+            ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+              content: Text(state.message),
+            ));
           }
         },
         builder: (context, state) {
@@ -42,11 +42,13 @@ class NotificationsScreen extends StatelessWidget {
           } else if (state is NotificationsLoaded) {
             if (state.notifications.isEmpty) {
               return const Center(
-                child: Text('No notifications available'),
+                // child: Text('No notifications available'),
+                child: CircularProgressIndicator(),
               );
             }
             return RefreshIndicator(
-              onRefresh: () => context.read<NotificationsCubit>().loadNotifications(),
+              onRefresh: () =>
+                  context.read<NotificationsCubit>().loadNotifications(),
               child: ListView.separated(
                 padding: const EdgeInsets.all(16),
                 separatorBuilder: (_, __) => const SizedBox(height: 8),
@@ -65,25 +67,27 @@ class NotificationsScreen extends StatelessWidget {
                   Text(state.message),
                   const SizedBox(height: 16),
                   ElevatedButton(
-                    onPressed: () => context.read<NotificationsCubit>().loadNotifications(),
+                    onPressed: () =>
+                        context.read<NotificationsCubit>().loadNotifications(),
                     child: const Text('Retry'),
                   ),
                 ],
               ),
             );
           }
-          return const Center(child: Text('No notifications available'));
+          return const Center(child: CircularProgressIndicator(),);
         },
       ),
     );
   }
 
-  Widget _buildNotificationCard(BuildContext context, NotificationModel notification) {
+  Widget _buildNotificationCard(
+      BuildContext context, NotificationModel notification) {
     return Dismissible(
       key: Key(notification.id),
       background: Container(
         decoration: BoxDecoration(
-          color: Colors.red,
+          color: ColorsHelper.LightGrey,
           borderRadius: BorderRadius.circular(12),
         ),
         alignment: Alignment.centerRight,
@@ -95,7 +99,8 @@ class NotificationsScreen extends StatelessWidget {
           context: context,
           builder: (context) => AlertDialog(
             title: const Text('Delete Notification'),
-            content: const Text('Are you sure you want to delete this notification?'),
+            content: const Text(
+                'Are you sure you want to delete this notification?'),
             actions: [
               TextButton(
                 onPressed: () => Navigator.of(context).pop(false),
@@ -103,7 +108,8 @@ class NotificationsScreen extends StatelessWidget {
               ),
               TextButton(
                 onPressed: () => Navigator.of(context).pop(true),
-                child: const Text('Delete', style: TextStyle(color: Colors.red)),
+                child:
+                    const Text('Delete', style: TextStyle(color: Colors.red)),
               ),
             ],
           ),
@@ -132,7 +138,9 @@ class NotificationsScreen extends StatelessWidget {
                   children: [
                     Icon(
                       _getNotificationIcon(notification.data.type),
-                      color: notification.read ? Colors.grey : Theme.of(context).primaryColor,
+                      color: notification.read
+                          ? Colors.grey
+                          : Theme.of(context).primaryColor,
                     ),
                     const SizedBox(width: 12),
                     Expanded(
@@ -175,15 +183,21 @@ class NotificationsScreen extends StatelessWidget {
 
   IconData _getNotificationIcon(String type) {
     switch (type) {
-      case 'ticket_created': return Icons.add_alert;
-      case 'ticket_updated': return Icons.edit;
-      case 'ticket_assigned': return Icons.assignment_ind;
-      case 'ticket_resolved': return Icons.check_circle;
-      default: return Icons.notifications;
+      case 'ticket_created':
+        return Icons.add_alert;
+      case 'ticket_updated':
+        return Icons.edit;
+      case 'ticket_assigned':
+        return Icons.assignment_ind;
+      case 'ticket_resolved':
+        return Icons.check_circle;
+      default:
+        return Icons.notifications;
     }
   }
 
-  void _markAsReadAndNavigate(BuildContext context, NotificationModel notification) {
+  void _markAsReadAndNavigate(
+      BuildContext context, NotificationModel notification) {
     if (!notification.read) {
       context.read<NotificationsCubit>().markAsRead(notification.id);
       ScaffoldMessenger.of(context).showSnackBar(
@@ -205,7 +219,8 @@ class NotificationsScreen extends StatelessWidget {
       context: context,
       builder: (context) => AlertDialog(
         title: const Text('Delete All Notifications'),
-        content: const Text('Are you sure you want to delete all notifications?'),
+        content:
+            const Text('Are you sure you want to delete all notifications?'),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(context).pop(),
@@ -219,7 +234,8 @@ class NotificationsScreen extends StatelessWidget {
                 const SnackBar(content: Text('All notifications deleted')),
               );
             },
-            child: const Text('Delete All', style: TextStyle(color: Colors.red)),
+            child:
+                const Text('Delete All', style: TextStyle(color: Colors.red)),
           ),
         ],
       ),

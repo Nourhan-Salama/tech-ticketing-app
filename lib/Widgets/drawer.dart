@@ -1,8 +1,6 @@
-
 import 'dart:io';
 
 import 'package:flutter/material.dart';
-
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:tech_app/Helper/text-icon-button.dart';
@@ -39,7 +37,7 @@ class _MyDrawerState extends State<MyDrawer> {
     try {
       final name = await storage.read(key: 'user_name');
       final email = await storage.read(key: 'user_email');
-      final imagePath = await storage.read(key: 'user_image_path'); 
+      final imagePath = await storage.read(key: 'user_image_path');
 
       setState(() {
         userName = name;
@@ -68,9 +66,58 @@ class _MyDrawerState extends State<MyDrawer> {
     Navigator.pop(context);
 
     if (routeName == UserDashboard.routeName) {
-      Navigator.pushNamedAndRemoveUntil(context, routeName, (route) => false);
+      Navigator.pushNamedAndRemoveUntil(
+        context,
+        routeName,
+        (route) => false,
+      );
     } else {
       Navigator.pushNamed(context, routeName);
+    }
+  }
+
+  Future<void> _performLogout(BuildContext context) async {
+    // Clear any existing snackbars
+    ScaffoldMessenger.of(context).clearSnackBars();
+
+    final logoutService = LogoutService();
+    final result = await logoutService.logout();
+
+    if (!mounted) return;
+
+    // Verify tokens after logout attempt
+    final storage = FlutterSecureStorage();
+    final tokenAfterLogout = await storage.read(key: 'access_token');
+    final refreshTokenAfterLogout = await storage.read(key: 'refresh_token');
+
+    if (result['code'] == 200 && tokenAfterLogout == null && refreshTokenAfterLogout == null) {
+      // Navigate to login screen without any messages
+      Navigator.pushNamedAndRemoveUntil(
+        context,
+        LoginScreen.routeName,
+        (route) => false,
+      );
+
+      // Show success message on the login screen after navigation completes
+    //   WidgetsBinding.instance.addPostFrameCallback((_) {
+    //     ScaffoldMessenger.of(context).showSnackBar(
+    //       SnackBar(
+    //         content: Text(result['message']),
+    //         duration: const Duration(seconds: 2),
+    //       ),
+    //     );
+    //   });
+    // } else {
+    //   String errorMessage = result['message'] ?? 'Logout failed';
+    //   if (tokenAfterLogout != null || refreshTokenAfterLogout != null) {
+    //     errorMessage += ' (Tokens still exist)';
+    //   }
+      // ScaffoldMessenger.of(context).showSnackBar(
+      //   SnackBar(
+      //     content: Text(errorMessage),
+      //     duration: const Duration(seconds: 2),
+      //   ),
+      // );
     }
   }
 
@@ -111,28 +158,7 @@ class _MyDrawerState extends State<MyDrawer> {
               child: TextIconButton(
                 icon: Icons.logout,
                 label: 'Logout',
-                onPressed: () async {
-                  final result = await LogoutService().logout();
-
-                  if (!mounted) return;
-
-                  if (result['code'] == 200) {
-                    Navigator.pushNamedAndRemoveUntil(
-                      context,
-                      LoginScreen.routeName,
-                      (route) => false,
-                    );
-
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(content: Text(result['message'])),
-                    );
-                  } else {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(
-                          content: Text(result['message'] ?? 'Logout failed')),
-                    );
-                  }
-                },
+                onPressed: () => _performLogout(context),
               ),
             ),
             const SizedBox(height: 20),
@@ -147,9 +173,8 @@ class _MyDrawerState extends State<MyDrawer> {
       return const Center(child: CircularProgressIndicator());
     }
 
-    String name = userName ?? 'Hello Gust';
+    String name = userName ?? 'Hello Guest';
     String email = userEmail ?? '';
-   // String? imagePath;
 
     return Row(
       children: [
@@ -188,7 +213,6 @@ class _MyDrawerState extends State<MyDrawer> {
             ],
           ),
         ),
-
         IconButton(
           onPressed: () {
             Navigator.pop(context);

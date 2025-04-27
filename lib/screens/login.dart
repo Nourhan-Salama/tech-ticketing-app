@@ -1,7 +1,5 @@
-
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:http/http.dart' as http;
 import 'package:tech_app/Helper/Custom-big-button.dart';
@@ -9,13 +7,11 @@ import 'package:tech_app/Helper/custom-textField.dart';
 import 'package:tech_app/cubits/login-cubit.dart';
 import 'package:tech_app/cubits/login-state.dart';
 import 'package:tech_app/screens/rest-screen.dart';
-
 import 'package:tech_app/screens/user-dashboard.dart';
 import 'package:tech_app/services/login-service.dart';
 import 'package:tech_app/services/service-profile.dart';
 import 'package:tech_app/util/colors.dart';
 import 'package:tech_app/util/responsive-helper.dart';
-
 
 class LoginScreen extends StatefulWidget {
   static const String routeName = '/login';
@@ -30,30 +26,23 @@ class _LoginScreenState extends State<LoginScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: BlocProvider(
-        create: (context) => LoginCubit(authApi: AuthApi(),
-           profileService: ProfileService(
-      client: http.Client(),  
-      secureStorage: FlutterSecureStorage(), 
-    ),),
+        create: (context) => LoginCubit(
+          authApi: AuthApi(),
+          profileService: ProfileService(
+            client: http.Client(),
+            secureStorage: FlutterSecureStorage(),
+          ),
+        ),
         child: BlocListener<LoginCubit, LoginState>(
           listener: (context, state) {
             if (state.isSuccess) {
+              // Clear any existing snackbars before navigation
+              ScaffoldMessenger.of(context).clearSnackBars();
               Navigator.pushNamedAndRemoveUntil(
                 context,
                 UserDashboard.routeName,
                 (route) => false,
               );
-            }
-            if (state.errorMessage != null && !state.isLoading) {
-              WidgetsBinding.instance.addPostFrameCallback((_) {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(
-                    content: Text(state.errorMessage!),
-                    backgroundColor: Colors.red,
-                  ),
-                );
-                context.read<LoginCubit>().clearError();
-              });
             }
           },
           child: _buildBody(context),
@@ -145,8 +134,6 @@ class _LoginScreenState extends State<LoginScreen> {
           SizedBox(height: ResponsiveHelper.heightPercent(context, 0.02)),
           _buildRememberMeAndForgotPassword(context),
           SizedBox(height: ResponsiveHelper.heightPercent(context, 0.03)),
-        
-      
           _buildSignInButton(context),
         ],
       ),
@@ -227,7 +214,7 @@ class _LoginScreenState extends State<LoginScreen> {
         TextButton(
           onPressed: () => Navigator.push(
             context,
-            MaterialPageRoute(builder: (context) =>   ResetPasswordScreen()),
+            MaterialPageRoute(builder: (context) => const ResetPasswordScreen()),
           ),
           child: Text(
             "Forget Password?",
@@ -244,12 +231,16 @@ class _LoginScreenState extends State<LoginScreen> {
   Widget _buildSignInButton(BuildContext context) {
     return BlocBuilder<LoginCubit, LoginState>(
       builder: (context, state) {
+        // Handle error messages
         if (state.errorMessage != null) {
           WidgetsBinding.instance.addPostFrameCallback((_) {
+            // Clear any existing snackbars before showing new one
+            ScaffoldMessenger.of(context).clearSnackBars();
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
                 content: Text(state.errorMessage!),
-                backgroundColor: Colors.red,
+                backgroundColor: ColorsHelper.LightGrey,
+                duration: const Duration(seconds: 3),
               ),
             );
             context.read<LoginCubit>().clearError();
@@ -268,7 +259,11 @@ class _LoginScreenState extends State<LoginScreen> {
           child: SubmitButton(
             isEnabled: state.isButtonEnabled && !state.isLoading,
             onPressed: state.isButtonEnabled && !state.isLoading
-                ? () => context.read<LoginCubit>().login()
+                ? () {
+                    // Clear any existing snackbars before login attempt
+                    ScaffoldMessenger.of(context).clearSnackBars();
+                    context.read<LoginCubit>().login();
+                  }
                 : null,
             buttonText: state.isLoading ? 'Loading...' : 'Sign In',
           ),

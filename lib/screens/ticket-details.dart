@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import 'package:tech_app/Helper/app-bar.dart';
+import 'package:tech_app/Widgets/drawer.dart';
 import 'package:tech_app/models/ticket-details-model.dart';
 import 'package:tech_app/util/colors.dart';
 
@@ -18,6 +19,7 @@ class TicketDetailsScreen extends StatelessWidget {
     final screenHeight = MediaQuery.of(context).size.height;
 
     return Scaffold(
+      drawer: MyDrawer(),
       appBar: CustomAppBar(title: 'Ticket Details'),
       body: SingleChildScrollView(
         padding: EdgeInsets.symmetric(

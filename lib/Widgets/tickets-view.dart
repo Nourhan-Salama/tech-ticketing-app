@@ -135,20 +135,41 @@ class _TicketsListState extends State<TicketsList> {
                     desktop: 16,
                   ),
                 ),
-                child: DataTableWidget(
-                  title: ticket.title,
-                  userName: ticket.user.name,
-                  status: _getStatusText(ticket.status),
-                  statusColor: _getStatusColor(ticket.status),
-                  ticketId: ticket.id,
-                  showDivider: index < widget.tickets.length - 1,
-                  onChatPressed: () {
-                    // Implement chat functionality if needed
-                    // Navigator.push(context, MaterialPageRoute(
-                    //   builder: (context) => ChatScreen(ticketId: ticket.id),
-                    // ));
+                child: GestureDetector(
+                   onTap: () async {
+                    try {
+                      final ticketService = context.read<TicketService>();
+                      final ticketDetails =
+                          await ticketService.getTicketDetails(ticket.id);
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) =>
+                              TicketDetailsScreen(ticket: ticketDetails),
+                        ),
+                      );
+                    } catch (e) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                            content: Text('Failed to load ticket details: $e')),
+                      );
+                    }
                   },
-                  onFinishPressed: () => _finishTicket(context, ticket.id),
+                  child: DataTableWidget(
+                    title: ticket.title,
+                    userName: ticket.user.name,
+                    status: _getStatusText(ticket.status),
+                    statusColor: _getStatusColor(ticket.status),
+                    ticketId: ticket.id,
+                    showDivider: index < widget.tickets.length - 1,
+                    onChatPressed: () {
+                      // Implement chat functionality if needed
+                      // Navigator.push(context, MaterialPageRoute(
+                      //   builder: (context) => ChatScreen(ticketId: ticket.id),
+                      // ));
+                    },
+                    onFinishPressed: () => _finishTicket(context, ticket.id),
+                  ),
                 ),
               );
             },

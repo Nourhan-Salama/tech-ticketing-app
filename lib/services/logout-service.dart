@@ -15,9 +15,9 @@ class LogoutService {
 
   Future<Map<String, dynamic>> logout() async {
     try {
-      final token = await secureStorage.read(key: 'access_token');
-
-      if (token == null) {
+      // First verify token exists before logout
+      final tokenBeforeLogout = await secureStorage.read(key: 'access_token');
+      if (tokenBeforeLogout == null) {
         return {
           'code': 401,
           'message': 'No access token found',
@@ -27,37 +27,54 @@ class LogoutService {
       final response = await client.post(
         Uri.parse('$baseUrl/auth/logout'),
         headers: {
-          'Authorization': 'Bearer $token',
+          'Authorization': 'Bearer $tokenBeforeLogout',
           'Content-Type': 'application/json',
         },
       );
 
+      // Always delete tokens regardless of server response
+      await _clearAllTokens();
+
+      // Verify tokens are actually deleted
+      final tokenAfterDelete = await secureStorage.read(key: 'access_token');
+      final refreshTokenAfterDelete = await secureStorage.read(key: 'refresh_token');
+
+      if (tokenAfterDelete != null || refreshTokenAfterDelete != null) {
+        return {
+          'code': 500,
+          'message': 'Logout failed: Tokens not properly deleted',
+        };
+      }
+
       if (response.statusCode == 200) {
-        await secureStorage.delete(key: 'access_token');
-        await secureStorage.delete(key: 'refresh_token');
-
-        // Add logs to verify token deletion
-        print(
-            'Access token deleted: ${await secureStorage.read(key: 'access_token')}');
-        print(
-            'Refresh token deleted: ${await secureStorage.read(key: 'refresh_token')}');
-
         return {
           'code': 200,
           'message': 'Logout successful',
         };
       } else {
-        final error = response.body;
+        // Even if the server logout fails, we've deleted the tokens locally
         return {
-          'code': response.statusCode,
-          'message': 'Logout failed: $error',
+          'code': 200,
+          'message': 'Logged out locally',
         };
       }
     } catch (e) {
+      // Try to delete tokens even if there was an error
+      await _clearAllTokens();
+      
       return {
         'code': 500,
         'message': 'Logout error: ${e.toString()}',
       };
     }
+  }
+
+  Future<void> _clearAllTokens() async {
+    // Delete all auth-related data
+    await secureStorage.delete(key: 'access_token');
+    await secureStorage.delete(key: 'refresh_token');
+    await secureStorage.delete(key: 'user_name');
+    await secureStorage.delete(key: 'user_email');
+    await secureStorage.delete(key: 'user_image_path');
   }
 }
