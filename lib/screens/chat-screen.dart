@@ -1,124 +1,132 @@
+// screens/chat-screen.dart
 import 'package:flutter/material.dart';
-import 'package:web_socket_channel/web_socket_channel.dart';
-import 'package:web_socket_channel/status.dart' as status;
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:tech_app/Widgets/message-input.dart';
+import 'package:tech_app/cubits/get-chat-cubit.dart';
+import 'package:tech_app/services/pusher-service.dart';
+
 
 class ChatScreen extends StatefulWidget {
+  final String conversationId;
+  final int ticketId;
   final String userName;
 
-  ChatScreen({required this.userName});
+  const ChatScreen({
+    required this.conversationId,
+    required this.ticketId,
+    required this.userName,
+    Key? key,
+  }) : super(key: key);
 
   @override
   _ChatScreenState createState() => _ChatScreenState();
 }
 
 class _ChatScreenState extends State<ChatScreen> {
-  late WebSocketChannel channel;
-  final TextEditingController _messageController = TextEditingController();
-  final List<Map<String, dynamic>> messages = [];
-
   @override
   void initState() {
     super.initState();
-    connectToWebSocket();
+    print('Initializing ChatScreen for conversation ${widget.conversationId}');
+   // _initializePusher();
+    _loadMessages();
   }
 
-  void connectToWebSocket() {
-    channel = WebSocketChannel.connect(
-      Uri.parse(''), 
-    );
+  // Future<void> _initializePusher() async {
+  //   print('Initializing Pusher for ChatScreen...');
+  //   try {
+  //     final userId = await PusherService.getUserId();
+  //     if (userId != null) {
+  //       await PusherService.subscribeToConversation(widget.conversationId);
+  //       print('Subscribed to conversation ${widget.conversationId}');
+  //     } else {
+  //       print('Failed to subscribe to conversation: User ID not found');
+  //     }
+  //   } catch (e) {
+  //     print('Error initializing Pusher in ChatScreen: $e');
+  //   }
+  // }
 
-    channel.stream.listen((message) {
-      setState(() {
-        messages.add({"text": message, "isMe": false});
-      });
-    });
-  }
-
-  void sendMessage() {
-    if (_messageController.text.trim().isEmpty) return;
-
-    String message = _messageController.text;
-    
-    setState(() {
-      messages.add({"text": message, "isMe": true});
-    });
-
-    channel.sink.add(message);
-
-    _messageController.clear();
-  }
-
-  @override
-  void dispose() {
-    channel.sink.close(status.goingAway);
-    super.dispose();
+  void _loadMessages() {
+    print('Loading messages for conversation ${widget.conversationId}');
+    final chatCubit = context.read<ChatCubit>();
+   // chatCubit.loadMessages(widget.conversationId);
   }
 
   @override
   Widget build(BuildContext context) {
+    print('Building ChatScreen...');
     return Scaffold(
       appBar: AppBar(
-        title: Row(
-          children: [
-            CircleAvatar(
-              backgroundImage: AssetImage("assets/avatar.png"),
-            ),
-            SizedBox(width: 10),
-            Text(widget.userName),
-          ],
-        ),
+        title: Text(widget.userName),
       ),
-      body: Column(
-        children: [
-          Expanded(
-            child: ListView.builder(
-              itemCount: messages.length,
-              itemBuilder: (context, index) {
-                bool isMe = messages[index]['isMe'];
-                return Align(
-                  alignment: isMe ? Alignment.centerRight : Alignment.centerLeft,
-                  child: Container(
-                    margin: EdgeInsets.symmetric(vertical: 5, horizontal: 10),
-                    padding: EdgeInsets.all(10),
-                    decoration: BoxDecoration(
-                      color: isMe ? Colors.blue : Colors.grey[300],
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    child: Text(
-                      messages[index]['text'],
-                      style: TextStyle(color: isMe ? Colors.white : Colors.black),
-                    ),
-                  ),
-                );
-              },
-            ),
-          ),
-          Padding(
-            padding: const EdgeInsets.all(10.0),
-            child: Row(
-              children: [
-                Expanded(
-                  child: TextField(
-                    controller: _messageController,
-                    decoration: InputDecoration(
-                      hintText: "Type your message here...",
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(30),
+      body: BlocConsumer<ChatCubit, ChatState>(
+        listener: (context, state) {
+          if (state.error != null) {
+            print('Error in ChatScreen: ${state.error}');
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(content: Text(state.error!)),
+            );
+          }
+        },
+        builder: (context, state) {
+          print('Current state in ChatScreen: ${state.runtimeType}');
+          
+          if (state is ChatInitial || state.isLoading) {
+            return const Center(child: CircularProgressIndicator());
+          }
+
+          final currentState = state as ChatLoaded;
+          print('Displaying ${currentState.messages.length} messages');
+
+          return Column(
+            children: [
+              Expanded(
+                child: ListView.builder(
+                  reverse: true,
+                  itemCount: currentState.messages.length,
+                  itemBuilder: (context, index) {
+                    final message = currentState.messages[index];
+                    print('Building message: ${message.id}');
+                    
+                    return Align(
+                      alignment: message.isMe 
+                          ? Alignment.centerRight 
+                          : Alignment.centerLeft,
+                      child: Container(
+                        margin: const EdgeInsets.symmetric(
+                          vertical: 4, 
+                          horizontal: 8,
+                        ),
+                        padding: const EdgeInsets.all(12),
+                        decoration: BoxDecoration(
+                          color: message.isMe 
+                              ? Colors.blue[100] 
+                              : Colors.grey[200],
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        child: Text(message.text),
                       ),
-                    ),
-                  ),
+                    );
+                  },
                 ),
-                SizedBox(width: 10),
-                IconButton(
-                  icon: Icon(Icons.send, color: Colors.blue),
-                  onPressed: sendMessage,
-                ),
-              ],
-            ),
-          ),
-        ],
+              ),
+              MessageInputField(
+                onSend: (text) {
+                  print('Sending message: $text');
+                 // context.read<ChatCubit>().sendMessage(text);
+                },
+              ),
+            ],
+          );
+        },
       ),
     );
   }
-}
 
+  @override
+  void dispose() {
+    print('Disposing ChatScreen...');
+    PusherService.unsubscribeFromConversation(widget.conversationId);
+    super.dispose();
+  }
+}

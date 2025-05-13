@@ -27,7 +27,7 @@ class _LoginScreenState extends State<LoginScreen> {
     return Scaffold(
       body: BlocProvider(
         create: (context) => LoginCubit(
-          authApi: AuthApi(),
+          authApi: AuthService(),
           profileService: ProfileService(
             client: http.Client(),
             secureStorage: FlutterSecureStorage(),

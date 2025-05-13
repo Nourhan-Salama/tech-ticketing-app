@@ -8,7 +8,7 @@ import 'package:tech_app/services/service-profile.dart';
 
 
 class LoginCubit extends Cubit<LoginState> {
-  final AuthApi authApi;
+  final AuthService authApi;
   final FlutterSecureStorage secureStorage;
   final ProfileService? profileService;
   final TextEditingController emailController = TextEditingController();

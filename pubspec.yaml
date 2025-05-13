@@ -50,11 +50,31 @@ dependencies:
   url_launcher: ^6.3.1
   flutter_secure_storage: ^9.2.4
   fl_chart: ^0.66.0
-  
+  #image_picker: ^0.8.7+1
+  permission_handler: ^10.4.0
+  flutter_launcher_icons: ^0.13.1
+  easy_localization: ^3.0.1
+  flutter_chat_ui: ^1.6.15
+  flutter_chat_types: ^3.6.2
+  uuid: ^4.5.1
+  flutter_slidable: ^3.1.2
+  file_picker: ^10.1.7
+  pusher_channels_flutter: ^2.4.0
+  fluttertoast: ^8.2.12
+
   
 dev_dependencies:
   flutter_test:
     sdk: flutter
+
+
+flutter_launcher_icons:
+  android: true
+  ios: true
+  image_path: "assets/icons/Group.png"
+  android_background_color: "#051754"  # replace with your desired hex color
+  ios_background_color: "#051754"
+
 
   # The "flutter_lints" package below contains a set of recommended lints to
   # encourage good coding practices. The lint set provided by the package is
@@ -78,6 +98,7 @@ flutter:
   assets:
    - assets/icons/avatar.png
    - assets/icons/Group.png
+   - assets/icons/formal.jpg
   #   - images/a_dot_ham.jpeg
 
   # An image asset can refer to one or more resolution-specific "variants", see

@@ -1,13 +1,13 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
+
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:tech_app/Helper/text-icon-button.dart';
-import 'package:tech_app/cubits/profile-cubit.dart';
+
 import 'package:tech_app/screens/all-tickets.dart';
-import 'package:tech_app/screens/chat-page.dart';
-import 'package:tech_app/screens/edit-profile.dart';
+import 'package:tech_app/screens/conversatins.dart';
+
 import 'package:tech_app/screens/login.dart';
 import 'package:tech_app/screens/user-dashboard.dart';
 import 'package:tech_app/services/logout-service.dart';
@@ -23,13 +23,20 @@ class MyDrawer extends StatefulWidget {
 class _MyDrawerState extends State<MyDrawer> {
   String? userName;
   String? userEmail;
-  String? userImagePath;
   bool isUserInfoLoading = true;
+
+  final AssetImage userAvatar = const AssetImage('assets/icons/formal.jpg');
 
   @override
   void initState() {
     super.initState();
+    _precacheImage();
     _loadUserInfo();
+  }
+
+  Future<void> _precacheImage() async {
+    // Ensure image is preloaded into memory
+    await precacheImage(userAvatar, context);
   }
 
   Future<void> _loadUserInfo() async {
@@ -37,12 +44,10 @@ class _MyDrawerState extends State<MyDrawer> {
     try {
       final name = await storage.read(key: 'user_name');
       final email = await storage.read(key: 'user_email');
-      final imagePath = await storage.read(key: 'user_image_path');
 
       setState(() {
         userName = name;
         userEmail = email;
-        userImagePath = imagePath;
         isUserInfoLoading = false;
       });
     } catch (e) {
@@ -77,7 +82,6 @@ class _MyDrawerState extends State<MyDrawer> {
   }
 
   Future<void> _performLogout(BuildContext context) async {
-    // Clear any existing snackbars
     ScaffoldMessenger.of(context).clearSnackBars();
 
     final logoutService = LogoutService();
@@ -85,39 +89,18 @@ class _MyDrawerState extends State<MyDrawer> {
 
     if (!mounted) return;
 
-    // Verify tokens after logout attempt
     final storage = FlutterSecureStorage();
     final tokenAfterLogout = await storage.read(key: 'access_token');
     final refreshTokenAfterLogout = await storage.read(key: 'refresh_token');
 
-    if (result['code'] == 200 && tokenAfterLogout == null && refreshTokenAfterLogout == null) {
-      // Navigate to login screen without any messages
+    if (result['code'] == 200 &&
+        tokenAfterLogout == null &&
+        refreshTokenAfterLogout == null) {
       Navigator.pushNamedAndRemoveUntil(
         context,
         LoginScreen.routeName,
         (route) => false,
       );
-
-      // Show success message on the login screen after navigation completes
-    //   WidgetsBinding.instance.addPostFrameCallback((_) {
-    //     ScaffoldMessenger.of(context).showSnackBar(
-    //       SnackBar(
-    //         content: Text(result['message']),
-    //         duration: const Duration(seconds: 2),
-    //       ),
-    //     );
-    //   });
-    // } else {
-    //   String errorMessage = result['message'] ?? 'Logout failed';
-    //   if (tokenAfterLogout != null || refreshTokenAfterLogout != null) {
-    //     errorMessage += ' (Tokens still exist)';
-    //   }
-      // ScaffoldMessenger.of(context).showSnackBar(
-      //   SnackBar(
-      //     content: Text(errorMessage),
-      //     duration: const Duration(seconds: 2),
-      //   ),
-      // );
     }
   }
 
@@ -132,7 +115,7 @@ class _MyDrawerState extends State<MyDrawer> {
         child: Column(
           children: [
             const SizedBox(height: 15),
-            _buildHeader(context),
+            _buildHeader(),
             const SizedBox(height: 40),
             TextIconButton(
               icon: Icons.dashboard,
@@ -150,8 +133,8 @@ class _MyDrawerState extends State<MyDrawer> {
             TextIconButton(
               icon: Icons.chat,
               label: 'Chat',
-              isSelected: currentRoute == ChatsPage.routeName,
-              onPressed: () => navigateToScreen(context, ChatsPage.routeName),
+              isSelected: currentRoute == ConversationsScreen.routeName,
+              onPressed: () => navigateToScreen(context, ConversationsScreen.routeName),
             ),
             const Spacer(),
             Align(
@@ -168,7 +151,7 @@ class _MyDrawerState extends State<MyDrawer> {
     );
   }
 
-  Widget _buildHeader(BuildContext context) {
+  Widget _buildHeader() {
     if (isUserInfoLoading) {
       return const Center(child: CircularProgressIndicator());
     }
@@ -189,7 +172,7 @@ class _MyDrawerState extends State<MyDrawer> {
             ),
             child: CircleAvatar(
               radius: 30,
-              backgroundImage: _getImageProvider(userImagePath),
+              backgroundImage: userAvatar,
             ),
           ),
         ),
@@ -213,25 +196,7 @@ class _MyDrawerState extends State<MyDrawer> {
             ],
           ),
         ),
-        IconButton(
-          onPressed: () {
-            Navigator.pop(context);
-            Navigator.pushNamed(context, EditProfileScreen.routeName)
-                .then((_) {
-              context.read<ProfileCubit>().loadProfile();
-            });
-          },
-          icon: const Icon(Icons.edit),
-          iconSize: 20,
-        ),
       ],
     );
-  }
-
-  ImageProvider _getImageProvider(String? imagePath) {
-    if (imagePath == null || imagePath.isEmpty) {
-      return const AssetImage('assets/icons/avatar.png');
-    }
-    return FileImage(File(imagePath));
   }
 }

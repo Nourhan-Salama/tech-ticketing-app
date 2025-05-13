@@ -1,14 +1,25 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:tech_app/services/pusher-service.dart';
 import 'screens/ticketing-app.dart';
 
 Future<void> main() async {
-  WidgetsFlutterBinding.ensureInitialized(); 
-  final SharedPreferences preferences = await SharedPreferences.getInstance();
-   WidgetsFlutterBinding.ensureInitialized();
+  WidgetsFlutterBinding.ensureInitialized();
+
+  // Check if user is already logged in
+  final secureStorage = const FlutterSecureStorage();
+  final loggedUserId = await secureStorage.read(key: 'user_id');
   
-  // Verify secure storage works
+  if (loggedUserId != null) {
+    try {
+      await PusherService.initPusher(userId: loggedUserId);
+    } catch (e) {
+      print('Pusher initialization failed: $e');
+    }
+  }
+  final SharedPreferences preferences = await SharedPreferences.getInstance();
+
   try {
     const storage = FlutterSecureStorage();
     await storage.write(key: 'test_key', value: 'test_value');
@@ -17,9 +28,8 @@ Future<void> main() async {
     print('✅ Secure storage test successful');
   } catch (e) {
     print('❌ Secure storage failed: $e');
-    // Fallback to alternative storage if needed
   }
 
-  runApp(TicketingApp(sharedPreferences: preferences)); 
+  runApp(TicketingApp(sharedPreferences: preferences));
 }
 

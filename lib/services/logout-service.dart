@@ -1,5 +1,7 @@
 import 'package:http/http.dart' as http;
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:tech_app/services/pusher-service.dart';
+
 
 class LogoutService {
   final String baseUrl;
@@ -15,53 +17,30 @@ class LogoutService {
 
   Future<Map<String, dynamic>> logout() async {
     try {
-      // First verify token exists before logout
-      final tokenBeforeLogout = await secureStorage.read(key: 'access_token');
-      if (tokenBeforeLogout == null) {
-        return {
-          'code': 401,
-          'message': 'No access token found',
-        };
+      final token = await secureStorage.read(key: 'access_token');
+      if (token == null) {
+        await _cleanUpLocalAuth();
+        return {'code': 401, 'message': 'No access token found'};
       }
 
       final response = await client.post(
         Uri.parse('$baseUrl/auth/logout'),
         headers: {
-          'Authorization': 'Bearer $tokenBeforeLogout',
+          'Authorization': 'Bearer $token',
           'Content-Type': 'application/json',
         },
       );
 
-      // Always delete tokens regardless of server response
-      await _clearAllTokens();
+      await _cleanUpLocalAuth();
 
-      // Verify tokens are actually deleted
-      final tokenAfterDelete = await secureStorage.read(key: 'access_token');
-      final refreshTokenAfterDelete = await secureStorage.read(key: 'refresh_token');
-
-      if (tokenAfterDelete != null || refreshTokenAfterDelete != null) {
-        return {
-          'code': 500,
-          'message': 'Logout failed: Tokens not properly deleted',
-        };
-      }
-
-      if (response.statusCode == 200) {
-        return {
-          'code': 200,
-          'message': 'Logout successful',
-        };
-      } else {
-        // Even if the server logout fails, we've deleted the tokens locally
-        return {
-          'code': 200,
-          'message': 'Logged out locally',
-        };
-      }
+      return {
+        'code': response.statusCode,
+        'message': response.statusCode == 200 
+          ? 'Logout successful' 
+          : 'Logged out locally (server logout failed)',
+      };
     } catch (e) {
-      // Try to delete tokens even if there was an error
-      await _clearAllTokens();
-      
+      await _cleanUpLocalAuth();
       return {
         'code': 500,
         'message': 'Logout error: ${e.toString()}',
@@ -69,10 +48,14 @@ class LogoutService {
     }
   }
 
-  Future<void> _clearAllTokens() async {
-    // Delete all auth-related data
+  Future<void> _cleanUpLocalAuth() async {
+    // Disconnect Pusher first
+    await PusherService.disconnect();
+    
+    // Then clear all local auth data
     await secureStorage.delete(key: 'access_token');
     await secureStorage.delete(key: 'refresh_token');
+    await secureStorage.delete(key: 'user_id');
     await secureStorage.delete(key: 'user_name');
     await secureStorage.delete(key: 'user_email');
     await secureStorage.delete(key: 'user_image_path');

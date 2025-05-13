@@ -1,28 +1,32 @@
+// import 'dart:convert';
+// import 'package:http/http.dart' as http;
 
-import 'package:dio/dio.dart';
-import 'package:tech_app/models/chat-model.dart';
+// Future<ApiResponse> sendMessage(String conversationId, MessageData messageData) async {
+//   final url = Uri.parse('https://graduation.arabic4u.org/api/conversations/$conversationId/messages');
+  
+//   final headers = {
+//     'Content-Type': 'application/json',
+//   };
 
-class ChatService {
-  final Dio dio = Dio();
-Future<List<ChatModel>> fetchChats(String managerId) async {
-  try {
-    final response = await dio.get("https://yourapi.com/chats/$managerId");//Api Link 
+//   final body = jsonEncode({
+//     'data': messageData.toJson(),
+//     'message': 'Resource Created Successfully',
+//     'type': 'success',
+//     'code': 201,
+//     'showToast': true,
+//   });
 
-    if (response.statusCode == 200) {
-      List<dynamic> data = response.data;
+//   try {
+//     final response = await http.post(url, headers: headers, body: body);
 
-      List<ChatModel> chats = data
-          .map((chat) => ChatModel.fromJson(chat))
-          //.where((chat) => chat.messages.isNotEmpty)
-          .toList();
+//     if (response.statusCode == 201) {
+//       return ApiResponse.fromJson(jsonDecode(response.body));
+//     } else {
+//       throw Exception('Failed to send message: ${response.statusCode}');
+//     }
+//   } catch (e) {
+//     throw Exception('Error sending message: $e');
+//   }
+// }
 
-      return chats;
-    } else {
-      throw Exception("Failed to load chats");
-    }
-  } catch (e) {
-    print("Error: $e");
-    throw Exception("Error fetching chats");
-  }
-}}
 

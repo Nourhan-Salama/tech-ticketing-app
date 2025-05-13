@@ -1,18 +1,22 @@
 import 'package:flutter/material.dart';
+import 'package:tech_app/models/ticket-model.dart';
+import 'package:tech_app/screens/conversatins.dart'; 
 import 'package:tech_app/util/colors.dart';
 import 'package:tech_app/util/responsive-helper.dart';
 
 class DataTableWidget extends StatelessWidget {
+  
   final String title;
   final String userName;
   final String status;
   final Color statusColor;
   final bool showDivider;
   final int ticketId;
-  final VoidCallback? onChatPressed;
+  final Function? onChatPressed;
   final VoidCallback? onFinishPressed;
 
   const DataTableWidget({
+    
     super.key,
     required this.title,
     required this.userName,
@@ -33,6 +37,7 @@ class DataTableWidget extends StatelessWidget {
       children: [
         Row(
           children: [
+            // Left side: Title + User
             Expanded(
               flex: 3,
               child: Column(
@@ -43,18 +48,21 @@ class DataTableWidget extends StatelessWidget {
                     style: TextStyle(
                       fontWeight: FontWeight.w600,
                       fontSize: ResponsiveHelper.responsiveTextSize(
-                        context,
-                        isMobile ? 14 : 16,
-                      ) * textScale,
+                            context,
+                            isMobile ? 14 : 16,
+                          ) *
+                          textScale,
                       color: Colors.black87,
                     ),
                   ),
-                  SizedBox(height: ResponsiveHelper.responsiveValue(
-                    context: context,
-                    mobile: 4,
-                    tablet: 6,
-                    desktop: 8,
-                  )),
+                  SizedBox(
+                    height: ResponsiveHelper.responsiveValue(
+                      context: context,
+                      mobile: 4,
+                      tablet: 6,
+                      desktop: 8,
+                    ),
+                  ),
                   Row(
                     children: [
                       Icon(
@@ -67,20 +75,23 @@ class DataTableWidget extends StatelessWidget {
                           desktop: 18,
                         ),
                       ),
-                      SizedBox(width: ResponsiveHelper.responsiveValue(
-                        context: context,
-                        mobile: 4,
-                        tablet: 6,
-                        desktop: 8,
-                      )),
+                      SizedBox(
+                        width: ResponsiveHelper.responsiveValue(
+                          context: context,
+                          mobile: 4,
+                          tablet: 6,
+                          desktop: 8,
+                        ),
+                      ),
                       Text(
                         userName,
                         style: TextStyle(
                           color: ColorsHelper.LightGrey,
                           fontSize: ResponsiveHelper.responsiveTextSize(
-                            context,
-                            isMobile ? 12 : 14,
-                          ) * textScale,
+                                context,
+                                isMobile ? 12 : 14,
+                              ) *
+                              textScale,
                         ),
                       ),
                     ],
@@ -88,6 +99,8 @@ class DataTableWidget extends StatelessWidget {
                 ],
               ),
             ),
+
+            // Middle: Status Box
             Expanded(
               flex: 2,
               child: Container(
@@ -122,15 +135,18 @@ class DataTableWidget extends StatelessWidget {
                     style: TextStyle(
                       color: statusColor,
                       fontSize: ResponsiveHelper.responsiveTextSize(
-                        context,
-                        isMobile ? 12 : 14,
-                      ) * textScale,
+                            context,
+                            isMobile ? 12 : 14,
+                          ) *
+                          textScale,
                       fontWeight: FontWeight.w600,
                     ),
                   ),
                 ),
               ),
             ),
+
+            // Right: Popup Menu
             Expanded(
               flex: 1,
               child: PopupMenuButton<String>(
@@ -144,9 +160,16 @@ class DataTableWidget extends StatelessWidget {
                   ),
                   color: Colors.black,
                 ),
-                onSelected: (value) {
-                  if (value == 'chat' && onChatPressed != null) {
-                    onChatPressed!();
+                onSelected: (value) async {
+                  if (value == 'chat') {
+                    Navigator.of(context).push(
+                      MaterialPageRoute(
+                        builder: (_) => ConversationsScreen(
+                           ticketId: ticketId,
+                          // userName: userName,
+                        ),
+                      ),
+                    );
                   } else if (value == 'finish' && onFinishPressed != null) {
                     _showFinishConfirmationDialog(context);
                   }
@@ -193,17 +216,6 @@ class DataTableWidget extends StatelessWidget {
             ),
           ],
         ),
-        // if (showDivider)
-        //   Divider(
-        //     height: ResponsiveHelper.responsiveValue(
-        //       context: context,
-        //       mobile: 16,
-        //       tablet: 20,
-        //       desktop: 24,
-        //     ),
-        //     thickness: 1,
-        //     color: Colors.grey[200],
-        //   ),
       ],
     );
   }
@@ -270,3 +282,4 @@ class DataTableWidget extends StatelessWidget {
     );
   }
 }
+
