@@ -86,6 +86,32 @@ class ConversationsService {
       throw Exception('Failed to create conversation: $e');
     }
   }
+  Future<void> sendMessage({
+  required String conversationId,
+  required String content,
+  required int type, // 0 for text, 1 for image, etc.
+}) async {
+  try {
+    String? token = await _secureStorage.read(key: 'access_token');
+    if (token == null) throw Exception('No access token found');
+
+    final response = await http.post(
+      Uri.parse('$_baseUrl/conversations/$conversationId/messages'),
+      headers: _headers(token),
+      body: json.encode({
+        'content': content,
+        'type': type,
+      }),
+    );
+
+    if (response.statusCode != 200 && response.statusCode != 201) {
+      throw Exception('Failed to send message: ${response.statusCode}');
+    }
+  } catch (e) {
+    print('❌ Error in sendMessage: $e');
+    throw Exception('Failed to send message: $e');
+  }
+}
 
   // 🔐 Shared headers
   Map<String, String> _headers(String token) => {

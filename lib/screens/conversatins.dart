@@ -132,7 +132,7 @@ class _ConversationsScreenState extends State<ConversationsScreen> {
           conversationId: conversation.id,
           ticketId: conversation.ticketId!.toString(),
 
-          userName: conversation.title,
+          userName: conversation.title,  userId: conversation.otherUser?.id ?? widget.userId ?? 0, 
         ),
       ),
     );

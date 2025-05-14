@@ -166,7 +166,7 @@ class DataTableWidget extends StatelessWidget {
                     Navigator.of(context).push(
                       MaterialPageRoute(
                         builder: (_) => ChatScreen(
-                         // userId: userId,
+                          userId: userId,
                            ticketId: ticketId.toString(),
                           userName: userName,
                         ),
