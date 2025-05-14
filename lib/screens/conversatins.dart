@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:tech_app/Helper/app-bar.dart';
 import 'package:tech_app/Widgets/drawer.dart';
+import 'package:tech_app/Widgets/search-chat.dart';
 import 'package:tech_app/cubits/Conversations/conversatins-state.dart';
 import 'package:tech_app/cubits/Conversations/conversation-cubit.dart';
 
@@ -11,8 +12,11 @@ import 'package:tech_app/screens/chat-screen.dart';
 class ConversationsScreen extends StatefulWidget {
   static const String routeName = '/conversations';
   final int? ticketId;
+  final String? userName;
+  final int? userId;
+  //final Conversation? conversation;
 
-  const ConversationsScreen({Key? key, this.ticketId}) : super(key: key);
+  const ConversationsScreen({Key? key, this.ticketId,this.userId,this.userName}) : super(key: key);
 
   @override
   _ConversationsScreenState createState() => _ConversationsScreenState();
@@ -79,17 +83,7 @@ class _ConversationsScreenState extends State<ConversationsScreen> {
             children: [
               Padding(
                 padding: const EdgeInsets.all(8.0),
-                child: TextField(
-                  controller: _searchController,
-                  decoration: InputDecoration(
-                    hintText: 'Search by user name or ticket ID',
-                    prefixIcon: const Icon(Icons.search),
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                  ),
-                 // onChanged: _handleSearch, 
-                ),
+                child: SearchChat(),
               ),
               Expanded(
                 child: conversations.isEmpty
@@ -136,7 +130,8 @@ class _ConversationsScreenState extends State<ConversationsScreen> {
       MaterialPageRoute(
         builder: (_) => ChatScreen(
           conversationId: conversation.id,
-          ticketId: conversation.ticketId!, 
+          ticketId: conversation.ticketId!.toString(),
+
           userName: conversation.title,
         ),
       ),

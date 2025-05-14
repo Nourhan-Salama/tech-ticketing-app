@@ -1,5 +1,5 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:tech_app/cubits/statistics-state.dart';
+import 'package:tech_app/cubits/statistics/statistics-state.dart';
 import 'package:tech_app/services/statistics.dart';
 
 class StatisticsCubit extends Cubit<StatisticsState> {

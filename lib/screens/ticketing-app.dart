@@ -5,17 +5,17 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
 import 'package:tech_app/Helper/enum-helper.dart';
 import 'package:tech_app/cubits/Conversations/conversation-cubit.dart';
-import 'package:tech_app/cubits/change-pass-cubit.dart';
-import 'package:tech_app/cubits/creat-new-cubit.dart';
+import 'package:tech_app/cubits/changePassword/change-pass-cubit.dart';
+
 import 'package:tech_app/cubits/get-chat-cubit.dart';
-import 'package:tech_app/cubits/get-ticket-cubits.dart';
-import 'package:tech_app/cubits/login-cubit.dart';
-import 'package:tech_app/cubits/notifications-cubit.dart';
-import 'package:tech_app/cubits/otp-verification-cubit.dart';
-import 'package:tech_app/cubits/profile-cubit.dart';
-import 'package:tech_app/cubits/rest-password-cubit.dart';
+import 'package:tech_app/cubits/tickets/get-ticket-cubits.dart';
+import 'package:tech_app/cubits/login/login-cubit.dart';
+import 'package:tech_app/cubits/notifications/notifications-cubit.dart';
+import 'package:tech_app/cubits/otp/otp-verification-cubit.dart';
+import 'package:tech_app/cubits/profile/profile-cubit.dart';
+import 'package:tech_app/cubits/resetPassword/rest-password-cubit.dart';
 import 'package:tech_app/cubits/rich-text-cubit.dart';
-import 'package:tech_app/cubits/sign-up-cubit.dart';
+
 
 import 'package:tech_app/screens/all-tickets.dart';
 import 'package:tech_app/screens/chande-password.dart';

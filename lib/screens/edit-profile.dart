@@ -7,8 +7,8 @@ import 'package:tech_app/Helper/Custom-big-button.dart';
 import 'package:tech_app/Helper/app-bar.dart';
 import 'package:tech_app/Helper/custom-textField.dart';
 import 'package:tech_app/Widgets/drawer.dart';
-import 'package:tech_app/cubits/profile-cubit.dart';
-import 'package:tech_app/cubits/prpfile-state.dart';
+import 'package:tech_app/cubits/profile/profile-cubit.dart';
+import 'package:tech_app/cubits/profile/prpfile-state.dart';
 import 'package:tech_app/util/colors.dart';
 import 'package:tech_app/util/responsive-helper.dart';
 

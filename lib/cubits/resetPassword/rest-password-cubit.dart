@@ -1,5 +1,5 @@
 import 'package:bloc/bloc.dart';
-import 'package:tech_app/cubits/rest-password-state.dart';
+import 'package:tech_app/cubits/resetPassword/rest-password-state.dart';
 import 'package:tech_app/services/send-forget-pass-api.dart';
 
 

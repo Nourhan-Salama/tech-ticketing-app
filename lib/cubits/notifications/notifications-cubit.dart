@@ -1,5 +1,5 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:tech_app/cubits/notifications-stae.dart';
+import 'package:tech_app/cubits/notifications/notifications-stae.dart';
 import 'package:tech_app/services/notifications-services.dart';
 
 

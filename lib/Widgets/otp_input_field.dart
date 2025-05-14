@@ -2,8 +2,8 @@
 import 'package:flutter/material.dart';
 import 'package:pin_code_fields/pin_code_fields.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:tech_app/cubits/otp-verification-cubit.dart';
-import 'package:tech_app/cubits/otp-verification-state.dart';
+import 'package:tech_app/cubits/otp/otp-verification-cubit.dart';
+import 'package:tech_app/cubits/otp/otp-verification-state.dart';
 import 'package:tech_app/util/responsive-helper.dart';
 
 

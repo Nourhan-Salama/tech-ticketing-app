@@ -1,7 +1,7 @@
 import 'dart:async';
 import 'package:bloc/bloc.dart';
 import 'package:tech_app/Helper/enum-helper.dart';
-import 'package:tech_app/cubits/otp-verification-state.dart';
+import 'package:tech_app/cubits/otp/otp-verification-state.dart';
 import 'package:tech_app/services/resend-otp-api.dart';
 import 'package:tech_app/services/verify_user_auth.dart';
 

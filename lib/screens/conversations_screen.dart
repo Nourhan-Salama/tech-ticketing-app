@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:tech_app/screens/chat_screen.dart';
+
+
 import 'package:tech_app/cubits/chat/chat_cubit.dart';
+import 'package:tech_app/screens/chat-screen.dart';
 
 class ConversationsScreen extends StatelessWidget {
   final List<Map<String, dynamic>> tickets;

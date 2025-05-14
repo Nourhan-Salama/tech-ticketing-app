@@ -1,17 +1,17 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
-
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:tech_app/Helper/text-icon-button.dart';
-
+import 'package:tech_app/cubits/Conversations/conversation-cubit.dart';
 import 'package:tech_app/screens/all-tickets.dart';
 import 'package:tech_app/screens/conversatins.dart';
-
 import 'package:tech_app/screens/login.dart';
 import 'package:tech_app/screens/user-dashboard.dart';
 import 'package:tech_app/services/logout-service.dart';
 import 'package:tech_app/util/colors.dart';
+
 
 class MyDrawer extends StatefulWidget {
   const MyDrawer({super.key});
@@ -35,7 +35,6 @@ class _MyDrawerState extends State<MyDrawer> {
   }
 
   Future<void> _precacheImage() async {
-    // Ensure image is preloaded into memory
     await precacheImage(userAvatar, context);
   }
 
@@ -76,6 +75,9 @@ class _MyDrawerState extends State<MyDrawer> {
         routeName,
         (route) => false,
       );
+    } else if (routeName == ConversationsScreen.routeName) {
+      context.read<ConversationsCubit>().loadConversations();
+      Navigator.pushNamed(context, routeName);
     } else {
       Navigator.pushNamed(context, routeName);
     }
@@ -134,7 +136,8 @@ class _MyDrawerState extends State<MyDrawer> {
               icon: Icons.chat,
               label: 'Chat',
               isSelected: currentRoute == ConversationsScreen.routeName,
-              onPressed: () => navigateToScreen(context, ConversationsScreen.routeName),
+              onPressed: () =>
+                  navigateToScreen(context, ConversationsScreen.routeName),
             ),
             const Spacer(),
             Align(
@@ -200,3 +203,4 @@ class _MyDrawerState extends State<MyDrawer> {
     );
   }
 }
+

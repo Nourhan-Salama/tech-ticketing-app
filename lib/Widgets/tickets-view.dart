@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:tech_app/Widgets/data-tabel.dart';
-import 'package:tech_app/cubits/get-ticket-cubits.dart';
+import 'package:tech_app/cubits/tickets/get-ticket-cubits.dart';
 import 'package:tech_app/models/ticket-model.dart';
 import 'package:tech_app/screens/ticket-details.dart';
 import 'package:tech_app/services/ticket-service.dart';
@@ -156,6 +156,7 @@ class _TicketsListState extends State<TicketsList> {
                     }
                   },
                   child: DataTableWidget(
+                    userId: ticket.user.id,
                     title: ticket.title,
                     userName: ticket.user.name,
                     status: _getStatusText(ticket.status),

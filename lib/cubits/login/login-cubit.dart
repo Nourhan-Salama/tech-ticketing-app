@@ -2,7 +2,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
-import 'package:tech_app/cubits/login-state.dart';
+import 'package:tech_app/cubits/login/login-state.dart';
 import 'package:tech_app/services/login-service.dart';
 import 'package:tech_app/services/service-profile.dart';
 

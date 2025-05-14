@@ -1,5 +1,5 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:tech_app/cubits/ticket-state.dart';
+import 'package:tech_app/cubits/tickets/ticket-state.dart';
 import 'package:tech_app/models/ticket-details-model.dart';
 import 'package:tech_app/models/ticket-model.dart';
 import 'package:tech_app/services/ticket-service.dart';

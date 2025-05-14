@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:tech_app/models/ticket-model.dart';
+import 'package:tech_app/screens/chat-screen.dart';
 import 'package:tech_app/screens/conversatins.dart'; 
 import 'package:tech_app/util/colors.dart';
 import 'package:tech_app/util/responsive-helper.dart';
 
 class DataTableWidget extends StatelessWidget {
-  
+  final int userId;
   final String title;
   final String userName;
   final String status;
@@ -16,8 +17,8 @@ class DataTableWidget extends StatelessWidget {
   final VoidCallback? onFinishPressed;
 
   const DataTableWidget({
-    
     super.key,
+    required this.userId,
     required this.title,
     required this.userName,
     required this.status,
@@ -164,9 +165,10 @@ class DataTableWidget extends StatelessWidget {
                   if (value == 'chat') {
                     Navigator.of(context).push(
                       MaterialPageRoute(
-                        builder: (_) => ConversationsScreen(
-                           ticketId: ticketId,
-                          // userName: userName,
+                        builder: (_) => ChatScreen(
+                         // userId: userId,
+                           ticketId: ticketId.toString(),
+                          userName: userName,
                         ),
                       ),
                     );

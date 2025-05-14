@@ -3,7 +3,7 @@ import 'dart:convert';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
-import 'package:tech_app/cubits/change-pass-state.dart';
+import 'package:tech_app/cubits/changePassword/change-pass-state.dart';
 
 class ChangePasswordCubit extends Cubit<ChangePasswordState> {
   final TextEditingController passwordController = TextEditingController();

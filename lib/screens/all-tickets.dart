@@ -3,8 +3,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:tech_app/Helper/app-bar.dart';
 import 'package:tech_app/Widgets/drawer.dart';
 import 'package:tech_app/Widgets/tickets-view.dart';
-import 'package:tech_app/cubits/get-ticket-cubits.dart';
-import 'package:tech_app/cubits/ticket-state.dart';
+import 'package:tech_app/cubits/tickets/get-ticket-cubits.dart';
+import 'package:tech_app/cubits/tickets/ticket-state.dart';
 import 'package:tech_app/util/responsive-helper.dart';
 
 class AllTickets extends StatefulWidget {

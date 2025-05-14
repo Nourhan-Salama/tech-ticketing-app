@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import 'package:intl/intl.dart';
-import 'package:tech_app/cubits/notifications-cubit.dart';
-import 'package:tech_app/cubits/notifications-stae.dart';
+import 'package:tech_app/cubits/notifications/notifications-cubit.dart';
+import 'package:tech_app/cubits/notifications/notifications-stae.dart';
 import 'package:tech_app/models/notifications-model.dart';
 import 'package:tech_app/util/colors.dart';
 
