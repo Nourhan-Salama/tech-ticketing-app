@@ -16,7 +16,9 @@ class ConversationsScreen extends StatefulWidget {
   final int? userId;
   //final Conversation? conversation;
 
-  const ConversationsScreen({Key? key, this.ticketId,this.userId,this.userName}) : super(key: key);
+  const ConversationsScreen(
+      {Key? key, this.ticketId, this.userId, this.userName})
+      : super(key: key);
 
   @override
   _ConversationsScreenState createState() => _ConversationsScreenState();
@@ -36,7 +38,7 @@ class _ConversationsScreenState extends State<ConversationsScreen> {
   Future<void> _initialize() async {
     final cubit = context.read<ConversationsCubit>();
     await cubit.loadConversations();
-    
+
     // If a ticketId was provided, try to find its conversation
     if (widget.ticketId != null) {
       final state = cubit.state;
@@ -50,7 +52,7 @@ class _ConversationsScreenState extends State<ConversationsScreen> {
             ticketId: widget.ticketId,
           ),
         );
-        
+
         if (conversation.id.isNotEmpty) {
           _openChat(context, conversation);
         }
@@ -67,7 +69,7 @@ class _ConversationsScreenState extends State<ConversationsScreen> {
         listener: (context, state) {
           if (state is ConversationsError) {
             ScaffoldMessenger.of(context).showSnackBar(
-             SnackBar(content: Text(state.message)),
+              SnackBar(content: Text(state.message)),
             );
           }
         },
@@ -94,7 +96,8 @@ class _ConversationsScreenState extends State<ConversationsScreen> {
                           final conversation = conversations[index];
                           return ListTile(
                             leading: CircleAvatar(
-                              backgroundImage: NetworkImage(conversation.avatarUrl),
+                              backgroundImage:
+                                  NetworkImage(conversation.avatarUrl),
                             ),
                             title: Text(conversation.title),
                             subtitle: Text(conversation.lastMessage),
@@ -103,7 +106,8 @@ class _ConversationsScreenState extends State<ConversationsScreen> {
                               children: [
                                 Text(_formatTime(conversation.lastMessageTime)),
                                 if (conversation.unread)
-                                  const Icon(Icons.brightness_1, size: 12, color: Colors.blue),
+                                  const Icon(Icons.brightness_1,
+                                      size: 12, color: Colors.blue),
                               ],
                             ),
                             onTap: () => _openChat(context, conversation),
@@ -124,15 +128,15 @@ class _ConversationsScreenState extends State<ConversationsScreen> {
 
   void _openChat(BuildContext context, Conversation conversation) {
     _selectedConversationId = conversation.id;
-  
+
     Navigator.push(
       context,
       MaterialPageRoute(
         builder: (_) => ChatScreen(
           conversationId: conversation.id,
-          ticketId: conversation.ticketId!.toString(),
-
-          userName: conversation.title,  userId: conversation.otherUser?.id ?? widget.userId ?? 0, 
+          ticketId: conversation.ticketId.toString(),
+          userName: conversation.title,
+          userId: conversation.otherUser?.id ?? widget.userId ?? 0,
         ),
       ),
     );

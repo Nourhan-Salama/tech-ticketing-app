@@ -7,9 +7,20 @@ import 'package:tech_app/cubits/notifications/notifications-stae.dart';
 import 'package:tech_app/models/notifications-model.dart';
 import 'package:tech_app/util/colors.dart';
 
-class NotificationsScreen extends StatelessWidget {
+class NotificationsScreen extends StatefulWidget {
   const NotificationsScreen({Key? key}) : super(key: key);
 
+  @override
+  State<NotificationsScreen> createState() => _NotificationsScreenState();
+  
+}
+
+class _NotificationsScreenState extends State<NotificationsScreen> {
+    @override
+  void initState() {
+    super.initState();
+    context.read<NotificationsCubit>().loadNotifications();
+  }
   @override
   Widget build(BuildContext context) {
     return Scaffold(

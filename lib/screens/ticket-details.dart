@@ -1,15 +1,17 @@
 import 'package:flutter/material.dart';
-
 import 'package:tech_app/Helper/app-bar.dart';
 import 'package:tech_app/Widgets/drawer.dart';
+import 'package:tech_app/models/statistics-model.dart';
 import 'package:tech_app/models/ticket-details-model.dart';
 import 'package:tech_app/util/colors.dart';
 
 class TicketDetailsScreen extends StatelessWidget {
   final TicketDetailsModel ticket;
+  final RecentTicket? statisticsModel;
 
   const TicketDetailsScreen({
     Key? key,
+    this.statisticsModel,
     required this.ticket,
   }) : super(key: key);
 
@@ -19,7 +21,7 @@ class TicketDetailsScreen extends StatelessWidget {
     final screenHeight = MediaQuery.of(context).size.height;
 
     return Scaffold(
-      drawer: MyDrawer(),
+      drawer: const MyDrawer(),
       appBar: CustomAppBar(title: 'Ticket Details'),
       body: SingleChildScrollView(
         padding: EdgeInsets.symmetric(
@@ -29,138 +31,202 @@ class TicketDetailsScreen extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Avatar & Name Section
-            Center(
-              child: Column(
-                children: [
-                  CircleAvatar(
-                    radius: screenWidth * 0.12, 
-                    backgroundColor: ColorsHelper.darkBlue,
-                    child: Text(
-                      getInitials(ticket.userName),
-                      style: TextStyle(
-                        fontSize: screenWidth * 0.06, 
-                        fontWeight: FontWeight.bold,
-                        color: Colors.white,
-                      ),
-                    ),
-                  ),
-                  const SizedBox(height: 8),
-                  Text(
-                    ticket.userName,
-                    style: const TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                    ),
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Expanded(child: _buildInfoColumn(screenHeight, true)),
+                SizedBox(width: screenWidth * 0.05),
+                Expanded(child: _buildInfoColumn(screenHeight, false)),
+              ],
+            ),
+            SizedBox(height: screenHeight * 0.02),
+            const Text(
+              'Description',
+              style: TextStyle(
+                fontSize: 20,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            SizedBox(height: screenHeight * 0.01),
+            Container(
+              width: screenWidth,
+              decoration: BoxDecoration(
+                border: Border.all(
+                  color: Colors.grey.withOpacity(0.5),
+                  width: 1,
+                ),
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(8),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.grey.withOpacity(0.2),
+                    blurRadius: 4,
+                    offset: const Offset(0, 2),
                   ),
                 ],
               ),
-            ),
-
-            const SizedBox(height: 24),
-
-            // Status Section
-            Row(
-              children: [
-                const Text(
-                  'Status: ',
-                  style: TextStyle(
+              child: Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Text(
+                  ticket.description,
+                  style: const TextStyle(
                     fontSize: 16,
-                    fontWeight: FontWeight.bold,
+                    color: Colors.black54,
                   ),
                 ),
-                Chip(
-                  materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 8, vertical: 0),
-                  backgroundColor: ticket.statusColor.withOpacity(0.2),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(8),
-                    
-                    side: BorderSide.none,
-                  ),
-                  label: Text(
-                    ticket.statusText,
-                    style: TextStyle(
-                      color: ticket.statusColor,
-                      fontSize: 14,
-                      fontWeight: FontWeight.w500,
+              ),
+            ),
+            SizedBox(height: screenHeight * 0.03),
+            const Text(
+              'Quick Chat',
+              style: TextStyle(
+                fontSize: 20,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            SizedBox(height: screenHeight * 0.015),
+            Wrap(
+              spacing: 10,
+              runSpacing: 10,
+              children: [
+                ElevatedButton(
+                  //managger
+                  onPressed: () {},
+                  style: ElevatedButton.styleFrom(
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(8),
                     ),
+                    backgroundColor: Colors.blue,
+                    padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+                  ),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                   
+                    children: [
+                       Icon(Icons.chat, color: Colors.white),
+                       const SizedBox(width: 8),
+                      const Text(
+                        'Chat with Manager',
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 14,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                //user
+                ElevatedButton(
+                  onPressed: () {},
+                  style: ElevatedButton.styleFrom(
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    backgroundColor: Colors.green,
+                    padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+                  ),
+                  child: Row(
+                    children: [
+                      Icon( Icons.chat, color: Colors.white),
+                      const SizedBox(width: 8),
+                      const Text(
+                        'Chat with User',
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 14,
+                        ),
+                      ),
+                    ],
                   ),
                 ),
               ],
             ),
-            const SizedBox(height: 16),
-
-            // Ticket Title (aligned with the rest)
-            Text(
-              ticket.title,
-              style: const TextStyle(
-                fontSize: 22,
-              ),
-            ),
-            const SizedBox(height: 16),
-
-            // Description Section
-            const Text(
-              'Description:',
-              style: TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-            const SizedBox(height: 8),
-            Text(
-              ticket.description,
-              style: const TextStyle(fontSize: 16),
-            ),
-            const SizedBox(height: 16),
-
-            // Service Section
-            _buildDetailRow('Service:', ticket.serviceName),
-              // Manager Section (if exists)
-            if (ticket.managerName != null)
-              _buildDetailRow('Manager:', ticket.managerName!),
-
-        
           ],
         ),
       ),
     );
   }
 
-  /// Helper widget for label + value row
-  Widget _buildDetailRow(String label, String value) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 8.0),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          SizedBox(
-            width: 100,
-            child: Text(
-              label,
-              style: const TextStyle(
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-          ),
-          Expanded(
-            child: Text(value),
-          ),
+  Widget _buildInfoColumn(double screenHeight, bool leftSide) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        if (leftSide) ...[
+          _buildInfoItem('Ticket ID', '${ticket.id}'),
+          SizedBox(height: screenHeight * 0.02),
+          _buildStatusItem(ticket.statusText, ticket.statusColor),
+          SizedBox(height: screenHeight * 0.02),
+          _buildInfoItem('Service', ticket.serviceName),
+          SizedBox(height: screenHeight * 0.02),
+          _buildInfoItem('Manager', ticket.managerName ?? 'No Manager'),
+        ] else ...[
+          _buildInfoItem('Title', ticket.title),
+          SizedBox(height: screenHeight * 0.02),
+          _buildInfoItem('User', ticket.userName),
+          SizedBox(height: screenHeight * 0.02),
+          _buildInfoItem('Technician', ticket.technicianName ?? 'No Technician'),
+        
+
         ],
-      ),
+      ],
     );
   }
 
-  /// Return initials from name
-  String getInitials(String name) {
-    final parts = name.trim().split(" ");
-    if (parts.length >= 2) {
-      return "${parts[0][0]}${parts[1][0]}".toUpperCase();
-    } else if (parts.isNotEmpty) {
-      return parts[0][0].toUpperCase();
-    }
-    return "";
+  Widget _buildInfoItem(String label, String value) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          label,
+          style: TextStyle(
+            color: Colors.grey[600],
+            fontSize: 16,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+        const SizedBox(height: 4),
+        Text(
+          value,
+          style: const TextStyle(
+            fontSize: 15,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildStatusItem(String status, Color color) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          'Status',
+          style: TextStyle(
+            color: Colors.grey[600],
+            fontSize: 16,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+        const SizedBox(height: 4),
+        Container(
+          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+          decoration: BoxDecoration(
+            color: color.withOpacity(0.1), 
+            borderRadius: BorderRadius.circular(20),
+          ),
+          child: Text(
+            status,
+            style: TextStyle(
+              color: color,
+              fontSize: 14,
+              fontWeight: FontWeight.w600,
+            ),
+          ),
+        ),
+      ],
+    );
   }
 }
+
+

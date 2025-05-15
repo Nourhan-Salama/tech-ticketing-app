@@ -9,8 +9,10 @@ class TicketDetailsModel {
   final String userName;
   final String? managerName;
   final String? technicianName;
+ // final int? createdAt;
 
   TicketDetailsModel({
+   // this.createdAt,
     required this.id,
     required this.title,
     required this.description,
@@ -31,6 +33,7 @@ class TicketDetailsModel {
       userName: json['user']?['name'] ?? 'Unknown',
       managerName: json['manager']?['user']?['name'],
       technicianName: json['technician']?['user']?['name'],
+     
     );
   }
 

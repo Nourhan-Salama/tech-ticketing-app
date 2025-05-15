@@ -1,13 +1,16 @@
 // chat_screen.dart
 import 'dart:convert';
-import 'dart:io';
+
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:pusher_channels_flutter/pusher_channels_flutter.dart';
 import 'package:tech_app/Widgets/message-input.dart';
-import 'package:uuid/uuid.dart';
-import 'package:tech_app/services/conversations-service.dart';
+import 'package:tech_app/cubits/chat/chat_cubit.dart';
+import 'package:tech_app/cubits/chat/chat_state.dart';
+import 'package:tech_app/models/chat_message.dart';
+import 'package:tech_app/services/message-service.dart';
 import 'package:tech_app/services/pusher-service.dart';
-import 'package:tech_app/models/conversation-model.dart';
+
 
 class ChatScreen extends StatefulWidget {
   final String? conversationId;
@@ -28,160 +31,132 @@ class ChatScreen extends StatefulWidget {
 }
 
 class _ChatScreenState extends State<ChatScreen> {
-  final List<Map<String, dynamic>> _messages = [];
-  late ConversationsService _conversationsService;
-  Conversation? _conversation;
+  late MessagesCubit _messagesCubit;
   bool _isLoading = true;
 
   @override
   void initState() {
     super.initState();
-    _conversationsService = ConversationsService();
-    _initializeConversation();
+    _messagesCubit = MessagesCubit(messagesService: MessagesService());
+    _initializeChat();
   }
 
-  Future<void> _initializeConversation() async {
-    try {
-      if (widget.conversationId == null) {
-        // Create new conversation if one doesn't exist
-        _conversation = await _conversationsService.createConversationWithUser(widget.userId);
-      } else {
-        // Get existing conversation
-        _conversation = await _conversationsService.getConversationWithUser(widget.userId);
-      }
+  Future<void> _initializeChat() async {
+    if (widget.conversationId != null) {
+      // Initialize Pusher
+      await PusherService.initPusher(userId: widget.userId.toString());
+      await PusherService.subscribeToConversation(widget.conversationId!);
+      
+      PusherService.onEvent = (PusherEvent event) {
+        if (event.eventName == 'new_message') {
+          final messageData = json.decode(event.data);
+          final message = ChatMessage.fromJson(messageData);
+          _messagesCubit.emit(MessagesLoaded([
+            message,
+            ...(_messagesCubit.state as MessagesLoaded).messages,
+          ]));
+        }
+      };
 
-      if (_conversation != null) {
-        // Initialize Pusher for this conversation
-        await PusherService.initPusher(userId: _conversation!.otherUser?.id.toString() ?? '0');
-        await PusherService.subscribeToConversation(_conversation!.id);
-        
-        // Set up Pusher event listener
-        PusherService.onEvent = (PusherEvent event) {
-          if (event.eventName == 'new_message') {
-            // Handle new message
-            final messageData = json.decode(event.data);
-            _handleIncomingMessage(messageData);
-          }
-        };
-      }
-    } catch (e) {
-      print('Error initializing conversation: $e');
-    } finally {
-      setState(() => _isLoading = false);
+      // Load existing messages
+      await _messagesCubit.loadMessages(widget.conversationId!);
     }
+    setState(() => _isLoading = false);
   }
 
-  void _handleIncomingMessage(Map<String, dynamic> messageData) {
-    // Process incoming message and add to _messages
-    setState(() {
-      _messages.insert(0, {
-        'id': messageData['id'],
-        'text': messageData['content'],
-        'isImage': false,
-        'isMe': false,
-        'time': DateTime.parse(messageData['created_at']),
-      });
-    });
-  }
-
-  void _sendMessage(String text) async {
-    if (_conversation == null) return;
-
-    final message = {
-      'id': const Uuid().v4(),
-      'text': text,
-      'isImage': false,
-      'isMe': true,
-      'time': DateTime.now(),
-    };
+  void _sendMessage(String text) {
+    if (widget.conversationId == null) return;
     
-    setState(() => _messages.insert(0, message));
-    
-    // Here you would typically send the message to your API
-    // await _conversationsService.sendMessage(
-    //   conversationId: _conversation!.id,
-    //   content: text,
-    //   type: 0, // text message
-    // );
+    _messagesCubit.sendMessage(
+      conversationId: widget.conversationId!,
+      content: text,
+      type: MessageType.text,
+      ticketId: widget.ticketId,
+    );
   }
 
   @override
   void dispose() {
-    if (_conversation != null) {
-      PusherService.unsubscribeFromConversation(_conversation!.id);
+    if (widget.conversationId != null) {
+      PusherService.unsubscribeFromConversation(widget.conversationId!);
     }
+    _messagesCubit.close();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    if (_isLoading) {
-      return const Scaffold(
-        body: Center(child: CircularProgressIndicator()),
-      );
-    }
-
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(widget.userName),
-        bottom: PreferredSize(
-          preferredSize: const Size.fromHeight(30),
-          child: Padding(
-            padding: const EdgeInsets.only(bottom: 8.0),
-            child: Text(
-              'Ticket ID: ${widget.ticketId} | Conversation ID: ${_conversation?.id ?? "Not created"}',
-              style: const TextStyle(fontSize: 12, color: Colors.white70),
+    return BlocProvider(
+      create: (context) => _messagesCubit,
+      child: Scaffold(
+        appBar: AppBar(
+          title: Text(widget.userName),
+          bottom: PreferredSize(
+            preferredSize: const Size.fromHeight(30),
+            child: Padding(
+              padding: const EdgeInsets.only(bottom: 8.0),
+              child: Text(
+                'Ticket ID: ${widget.ticketId} | Conversation ID: ${widget.conversationId ?? "Not created"}',
+                style: const TextStyle(fontSize: 12, color: Colors.white70),
+              ),
             ),
           ),
         ),
-      ),
-      body: Column(
-        children: [
-          Expanded(
-            child: _messages.isEmpty
-                ? const Center(child: Text("No messages yet"))
-                : ListView.builder(
-                    reverse: true,
-                    padding: const EdgeInsets.all(8),
-                    itemCount: _messages.length,
-                    itemBuilder: (context, index) {
-                      final msg = _messages[index];
-                      final isMe = msg['isMe'] ?? false;
-                      return Align(
-                        alignment: isMe
-                            ? Alignment.centerRight
-                            : Alignment.centerLeft,
-                        child: Container(
-                          margin: const EdgeInsets.symmetric(vertical: 4),
-                          padding: const EdgeInsets.all(12),
-                          constraints: BoxConstraints(
-                            maxWidth:
-                                MediaQuery.of(context).size.width * 0.7,
-                          ),
-                          decoration: BoxDecoration(
-                            color: isMe
-                                ? Colors.blueAccent
-                                : Colors.grey.shade300,
-                            borderRadius: BorderRadius.circular(16),
-                          ),
-                          child: msg['isImage']
-                              ? Image.file(msg['file'])
-                              : Text(
-                                  msg['text'] ?? '',
-                                  style: TextStyle(
-                                      color: isMe
-                                          ? Colors.white
-                                          : Colors.black),
+        body: _isLoading
+            ? const Center(child: CircularProgressIndicator())
+            : Column(
+                children: [
+                  Expanded(
+                    child: BlocBuilder<MessagesCubit, MessagesState>(
+                      builder: (context, state) {
+                        if (state is MessagesInitial || state is MessagesLoading) {
+                          return const Center(child: CircularProgressIndicator());
+                        } else if (state is MessageError) {
+                          return Center(child: Text(state.message));
+                        } else if (state is MessagesLoaded) {
+                          return ListView.builder(
+                            reverse: true,
+                            padding: const EdgeInsets.all(8),
+                            itemCount: state.messages.length,
+                            itemBuilder: (context, index) {
+                              final message = state.messages[index];
+                              final isMe = message.senderId == widget.userId;
+                              
+                              return Align(
+                                alignment: isMe
+                                    ? Alignment.centerRight
+                                    : Alignment.centerLeft,
+                                child: Container(
+                                  margin: const EdgeInsets.symmetric(vertical: 4),
+                                  padding: const EdgeInsets.all(12),
+                                  constraints: BoxConstraints(
+                                    maxWidth: MediaQuery.of(context).size.width * 0.7,
+                                  ),
+                                  decoration: BoxDecoration(
+                                    color: isMe
+                                        ? Colors.blueAccent
+                                        : Colors.grey.shade300,
+                                    borderRadius: BorderRadius.circular(16),
+                                  ),
+                                  child: Text(
+                                    message.content ?? '',
+                                    style: TextStyle(
+                                      color: isMe ? Colors.white : Colors.black),
+                                  ),
                                 ),
-                        ),
-                      );
-                    },
+                              );
+                            },
+                          );
+                        }
+                        return const Center(child: Text('No messages yet'));
+                      },
+                    ),
                   ),
-          ),
-          MessageInputField(
-            onSend: _sendMessage,
-          ),
-        ],
+                  MessageInputField(
+                    onSend: _sendMessage,
+                  ),
+                ],
+              ),
       ),
     );
   }

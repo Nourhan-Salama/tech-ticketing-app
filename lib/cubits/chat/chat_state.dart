@@ -1,45 +1,29 @@
-import 'package:equatable/equatable.dart';
-import 'package:tech_app/models/chat_message.dart' as chat;
 
-abstract class ChatState extends Equatable {
-  const ChatState();
 
-  @override
-  List<Object?> get props => [];
+import 'package:tech_app/models/chat_message.dart';
+
+abstract class MessagesState {}
+
+class MessagesInitial extends MessagesState {}
+
+class MessagesLoading extends MessagesState {}
+
+class MessageSending extends MessagesState {}
+
+class MessagesLoaded extends MessagesState {
+  final List<ChatMessage> messages;
+
+  MessagesLoaded(this.messages);
 }
 
-class ChatInitial extends ChatState {}
+class MessageSentSuccess extends MessagesState {
+  final ChatMessage message;
 
-class ChatLoading extends ChatState {}
-
-class ChatLoaded extends ChatState {
-  final List<chat.ChatMessage> messages;
-  final bool isTyping;
-
-  const ChatLoaded({
-    required this.messages,
-    this.isTyping = false,
-  });
-
-  @override
-  List<Object?> get props => [messages, isTyping];
-
-  ChatLoaded copyWith({
-    List<chat.ChatMessage>? messages,
-    bool? isTyping,
-  }) {
-    return ChatLoaded(
-      messages: messages ?? this.messages,
-      isTyping: isTyping ?? this.isTyping,
-    );
-  }
+  MessageSentSuccess(this.message);
 }
 
-class ChatError extends ChatState {
+class MessageError extends MessagesState {
   final String message;
 
-  const ChatError(this.message);
-
-  @override
-  List<Object?> get props => [message];
-} 
+  MessageError(this.message);
+}

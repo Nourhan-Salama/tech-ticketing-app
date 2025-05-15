@@ -44,6 +44,14 @@ class _UserDashboardState extends State<UserDashboard> {
           }
 
           final stats = snapshot.data!;
+          
+         
+          print('Stats Debug:');
+          print('All Tickets: ${stats.allTickets}');
+          print('In Progress Tickets: ${stats.inProcessingTickets}');
+          print('Closed Tickets: ${stats.closedTickets}');
+          print('Users: ${stats.users}');
+          
           final annualData = stats.annualTicketsAverage;
           final recentData = stats.recentTickets;
 
@@ -83,7 +91,7 @@ class _UserDashboardState extends State<UserDashboard> {
                       icon: Icons.airplane_ticket,
                       title: 'All Tickets',
                       value: stats.allTickets.toString(),
-                      percentage: stats.allTickets.toDouble(),
+                      percentage: stats.allTickets*100,
                     ),
                     StatusCard(
                       icon: Icons.airplane_ticket,
@@ -105,7 +113,7 @@ class _UserDashboardState extends State<UserDashboard> {
                       icon: Icons.group,
                       title: 'Users',
                       value: (stats.users ?? 0).toString(),
-                      percentage: (stats.users ?? 0).toDouble(),
+                      percentage: (stats.users ?? 0).toDouble() * 100,
                     ),
                   ],
                 ),
@@ -297,313 +305,5 @@ class _UserDashboardState extends State<UserDashboard> {
     );
   }
 }
-
-
-
-// import 'package:fl_chart/fl_chart.dart';
-// import 'package:flutter/material.dart';
-// import 'package:flutter_bloc/flutter_bloc.dart';
-// import 'package:tech_app/Helper/app-bar.dart';
-// import 'package:tech_app/Helper/card-ticket.dart';
-// import 'package:tech_app/Widgets/drawer.dart';
-// import 'package:tech_app/cubits/get-ticket-cubits.dart';
-// import 'package:tech_app/cubits/ticket-state.dart';
-// import 'package:tech_app/util/colors.dart';
-// import 'package:tech_app/util/responsive-helper.dart';
-
-// class UserDashboard extends StatefulWidget {
-//   static const String routeName = "/user-dashboard";
-//   const UserDashboard({super.key});
-
-//   @override
-//   State<UserDashboard> createState() => _UserDashboardState();
-// }
-
-// class _UserDashboardState extends State<UserDashboard> {
-//   final ScrollController _scrollController = ScrollController();
-//   bool _isLoadingMore = false;
-
-//   @override
-//   void initState() {
-//     super.initState();
-//     _scrollController.addListener(_onScroll);
-//   }
-
-//   @override
-//   void dispose() {
-//     _scrollController.dispose();
-//     super.dispose();
-//   }
-
-//   void _onScroll() {
-//     if (_scrollController.position.pixels ==
-//         _scrollController.position.maxScrollExtent) {
-//       _loadMoreTickets();
-//     }
-//   }
-
-//   void _loadMoreTickets() {
-//     if (!_isLoadingMore) {
-//       setState(() => _isLoadingMore = true);
-//       context.read<TicketsCubit>().fetchTickets().then((_) {
-//         setState(() => _isLoadingMore = false);
-//       });
-//     }
-//   }
-
-//   @override
-//   Widget build(BuildContext context) {
-//     return Scaffold(
-//       drawer: const MyDrawer(),
-//       appBar: const CustomAppBar(title: 'Dashboard'),
-//       body: SingleChildScrollView(
-//         controller: _scrollController,
-//         padding: const EdgeInsets.all(16),
-//         child: Column(
-//           crossAxisAlignment: CrossAxisAlignment.start,
-//           children: [
-//             // Dashboard Cards
-//             GridView.count(
-//               crossAxisCount: 2,
-//               shrinkWrap: true,
-//               physics: const NeverScrollableScrollPhysics(),
-//               childAspectRatio: 0.85,
-//               mainAxisSpacing: 12,
-//               crossAxisSpacing: 12,
-//               children: const [
-//                 StatusCard(
-//                   icon: Icons.airplane_ticket,
-//                   title: 'All Tickets',
-//                   value: '7',
-//                   percentage: 100,
-//                 ),
-//                 StatusCard(
-//                   icon: Icons.airplane_ticket,
-//                   title: 'Open Tickets',
-//                   value: '3',
-//                   percentage: 30,
-//                 ),
-//                 StatusCard(
-//                   icon: Icons.airplane_ticket,
-//                   title: 'Closed Tickets',
-//                   value: '4',
-//                   percentage: 70,
-//                 ),
-//                 StatusCard(
-//                   icon: Icons.group,
-//                   title: 'Users',
-//                   value: '5',
-//                   percentage: 100,
-//                 ),
-//               ],
-//             ),
-
-//             const SizedBox(height: 24),
-
-//             // Bar Chart
-//             Container(
-//               padding: const EdgeInsets.all(16),
-//               decoration: BoxDecoration(
-//                 color: Colors.white,
-//                 borderRadius: BorderRadius.circular(16),
-//                 border: Border.all(color: Colors.grey),
-//                 boxShadow: [
-//                   BoxShadow(
-//                     color: Colors.black.withOpacity(0.05),
-//                     blurRadius: 10,
-//                     offset: const Offset(0, 4),
-//                   ),
-//                 ],
-//               ),
-//               child: Column(
-//                 crossAxisAlignment: CrossAxisAlignment.start,
-//                 children: [
-//                   const Text(
-//                     'Daily Respond',
-//                     style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold),
-//                   ),
-//                   const SizedBox(height: 12),
-//                   SizedBox(
-//                     height: 200,
-//                     child: BarChart(
-//                       BarChartData(
-//                         alignment: BarChartAlignment.spaceAround,
-//                         gridData: const FlGridData(show: false),
-//                         titlesData: FlTitlesData(
-//                           bottomTitles: AxisTitles(
-//                             sideTitles: SideTitles(
-//                               showTitles: true,
-//                               interval: 1,
-//                               getTitlesWidget: (value, meta) {
-//                                 const days = ['Sat', 'Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri'];
-//                                 return Text(
-//                                   days[value.toInt()],
-//                                   style: const TextStyle(fontSize: 12, color: Colors.grey),
-//                                 );
-//                               },
-//                             ),
-//                           ),
-//                           leftTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
-//                           rightTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
-//                           topTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
-//                         ),
-//                         borderData: FlBorderData(show: false),
-//                         barGroups: List.generate(7, (i) {
-//                           final heights = [5, 7, 10, 8, 6, 4, 3];
-//                           return BarChartGroupData(x: i, barRods: [
-//                             BarChartRodData(
-//                               toY: heights[i].toDouble(),
-//                               color: Colors.deepPurple,
-//                               borderRadius: BorderRadius.circular(4),
-//                               width: 14,
-//                             ),
-//                           ]);
-//                         }),
-//                       ),
-//                     ),
-//                   ),
-//                 ],
-//               ),
-//             ),
-
-//             const SizedBox(height: 24),
-
-//             // Curved Line Chart
-//             Container(
-//               padding: const EdgeInsets.all(16),
-//               decoration: BoxDecoration(
-//                 color: Colors.white,
-//                 borderRadius: BorderRadius.circular(16),
-//                 border: Border.all(color: Colors.grey),
-//                 boxShadow: [
-//                   BoxShadow(
-//                     color: Colors.black.withOpacity(0.05),
-//                     blurRadius: 10,
-//                     offset: const Offset(0, 4),
-//                   ),
-//                 ],
-//               ),
-//               child: Column(
-//                 crossAxisAlignment: CrossAxisAlignment.start,
-//                 children: [
-//                   const Text(
-//                     'Annual tickets average',
-//                     style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold),
-//                   ),
-//                   const SizedBox(height: 12),
-//                   SizedBox(
-//                     height: 200,
-//                     child: LineChart(
-//                       LineChartData(
-//                         minX: 0,
-//                         maxX: 4,
-//                         minY: 0,
-//                         maxY: 5,
-//                         gridData: const FlGridData(show: false),
-//                         titlesData: FlTitlesData(
-//                           bottomTitles: AxisTitles(
-//                             sideTitles: SideTitles(
-//                               showTitles: true,
-//                               interval: 1,
-//                               getTitlesWidget: (value, meta) {
-//                                 const years = ['2021', '2022', '2023', '2024', '2025'];
-//                                 if (value.toInt() < years.length) {
-//                                   return Padding(
-//                                     padding: const EdgeInsets.only(top: 8.0),
-//                                     child: Text(
-//                                       years[value.toInt()],
-//                                       style: const TextStyle(
-//                                         fontSize: 12,
-//                                         color: Colors.grey,
-//                                       ),
-//                                     ),
-//                                   );
-//                                 }
-//                                 return const Text('');
-//                               },
-//                             ),
-//                           ),
-//                           leftTitles: AxisTitles(
-//                             sideTitles: SideTitles(
-//                               showTitles: true,
-//                               interval: 1,
-//                               getTitlesWidget: (value, meta) {
-//                                 return Text(
-//                                   value.toInt().toString(),
-//                                   style: const TextStyle(
-//                                     fontSize: 12,
-//                                     color: Colors.grey,
-//                                   ),
-//                                 );
-//                               },
-//                             ),
-//                           ),
-//                           rightTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
-//                           topTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
-//                         ),
-//                         borderData: FlBorderData(
-//                           show: true,
-//                           border: Border.all(
-//                             color: Colors.grey.withOpacity(0.2),
-//                             width: 1,
-//                           ),
-//                         ),
-//                         lineBarsData: [
-//                           LineChartBarData(
-//                             spots: const [
-//                               FlSpot(0, 1),
-//                               FlSpot(1, 2.5),
-//                               FlSpot(2, 1.5),
-//                               FlSpot(3, 3),
-//                               FlSpot(4, 4),
-//                             ],
-//                             isCurved: true,
-//                             curveSmoothness: 0.3,
-//                             color: ColorsHelper.darkBlue,
-//                             barWidth: 4,
-//                             isStrokeCapRound: true,
-//                             dotData: FlDotData(
-//                               show: true,
-//                               getDotPainter: (spot, percent, barData, index) {
-//                                 return FlDotCirclePainter(
-//                                   radius: 4,
-//                                   color: ColorsHelper.darkBlue,
-//                                   strokeWidth: 2,
-//                                   strokeColor: Colors.white,
-//                                 );
-//                               },
-//                             ),
-//                             belowBarData: BarAreaData(
-//                               show: true,
-//                               gradient: LinearGradient(
-//                                 colors: [
-//                                   Colors.blue.withOpacity(0.3),
-//                                   Colors.blue.withOpacity(0.1),
-//                                 ],
-//                                 begin: Alignment.topCenter,
-//                                 end: Alignment.bottomCenter,
-//                               ),
-//                             ),
-//                             shadow: const Shadow(
-//                               color: Colors.blue,
-//                               blurRadius: 8,
-//                               offset: Offset(0, 2),
-//                             ),
-//                           ),
-//                         ],
-//                       ),
-//                     ),
-//                   ),
-//                 ],
-//               ),
-//             ),
-
-//             const SizedBox(height: 24),
-//           ],
-//         ),
-//       ),
-//     );
-//   }
-// }
 
 
