@@ -61,6 +61,8 @@ dependencies:
   file_picker: ^10.1.7
   pusher_channels_flutter: ^2.4.0
   fluttertoast: ^8.2.12
+  audioplayers: ^6.4.0
+
 
   
 dev_dependencies:
@@ -99,6 +101,7 @@ flutter:
    - assets/icons/avatar.png
    - assets/icons/Group.png
    - assets/icons/formal.jpg
+   - assets/sounds/notifications.wav
   #   - images/a_dot_ham.jpeg
 
   # An image asset can refer to one or more resolution-specific "variants", see

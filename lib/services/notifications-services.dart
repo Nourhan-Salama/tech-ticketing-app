@@ -3,11 +3,20 @@ import 'package:http/http.dart' as http;
 import 'package:flutter/foundation.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:tech_app/models/notifications-model.dart';
-
+import 'package:audioplayers/audioplayers.dart';
 
 class NotificationService {
   static const String _baseUrl = 'https://graduation.arabic4u.org';
   final FlutterSecureStorage _storage = const FlutterSecureStorage();
+  final AudioPlayer _audioPlayer = AudioPlayer();
+
+  Future<void> playNotificationSound() async {
+    try {
+      await _audioPlayer.play(AssetSource('sounds/notification.mp3'));
+    } catch (e) {
+      debugPrint('Error playing notification sound: $e');
+    }
+  }
 
   Future<String> get _accessToken async {
     final token = await _storage.read(key: 'access_token');

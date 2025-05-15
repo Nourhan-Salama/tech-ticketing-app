@@ -1,7 +1,7 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:tech_app/cubits/notifications/notifications-stae.dart';
-import 'package:tech_app/services/notifications-services.dart';
 
+import 'package:tech_app/services/notifications-services.dart';
 
 class NotificationsCubit extends Cubit<NotificationsState> {
   final NotificationService _service;
@@ -9,11 +9,17 @@ class NotificationsCubit extends Cubit<NotificationsState> {
   NotificationsCubit(this._service) : super(NotificationsInitial());
 
   Future<void> loadNotifications() async {
-     if (state is NotificationsLoaded) return;
+    if (state is NotificationsLoaded) return;
     emit(NotificationsLoading());
     try {
       final notifications = await _service.getAllNotifications();
       final unreadCount = await _service.getUnreadCount();
+      
+      // Play sound if there are unread notifications
+      if (unreadCount > 0) {
+        await _service.playNotificationSound();
+      }
+      
       emit(NotificationsLoaded(notifications, unreadCount));
     } catch (e) {
       if (e.toString().contains('401')) {
@@ -29,38 +35,35 @@ class NotificationsCubit extends Cubit<NotificationsState> {
     }
   }
 
- Future<void> markAsRead(String notificationId) async {
-  if (state is NotificationsLoaded) {
-    final currentState = state as NotificationsLoaded;
+  Future<void> markAsRead(String notificationId) async {
+    if (state is NotificationsLoaded) {
+      final currentState = state as NotificationsLoaded;
 
-    final notificationIndex = currentState.notifications.indexWhere(
-      (n) => n.id == notificationId,
-    );
+      final notificationIndex = currentState.notifications.indexWhere(
+        (n) => n.id == notificationId,
+      );
 
-    if (notificationIndex == -1) return;
+      if (notificationIndex == -1) return;
 
-    final notification = currentState.notifications[notificationIndex];
+      final notification = currentState.notifications[notificationIndex];
 
-    if (notification.read) return; 
+      if (notification.read) return;
 
-    try {
-      await _service.markAsRead(notificationId);
+      try {
+        await _service.markAsRead(notificationId);
 
-     
-      final updatedNotification = notification.copyWith(read: true);
+        final updatedNotification = notification.copyWith(read: true);
+        final updatedNotifications = [...currentState.notifications];
+        updatedNotifications[notificationIndex] = updatedNotification;
 
-      final updatedNotifications = [...currentState.notifications];
-      updatedNotifications[notificationIndex] = updatedNotification;
+        final updatedUnreadCount = currentState.unreadCount - 1;
 
-      final updatedUnreadCount = currentState.unreadCount - 1;
-
-      emit(NotificationsLoaded(updatedNotifications, updatedUnreadCount));
-    } catch (e) {
-      emit(NotificationsError('Failed to mark as read: ${e.toString()}'));
+        emit(NotificationsLoaded(updatedNotifications, updatedUnreadCount));
+      } catch (e) {
+        emit(NotificationsError('Failed to mark as read: ${e.toString()}'));
+      }
     }
   }
-}
-
 
   Future<void> markAllAsRead() async {
     try {

@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-
 import 'package:intl/intl.dart';
 import 'package:tech_app/cubits/notifications/notifications-cubit.dart';
 import 'package:tech_app/cubits/notifications/notifications-stae.dart';
+
 import 'package:tech_app/models/notifications-model.dart';
 import 'package:tech_app/util/colors.dart';
 
@@ -12,25 +12,39 @@ class NotificationsScreen extends StatefulWidget {
 
   @override
   State<NotificationsScreen> createState() => _NotificationsScreenState();
-  
 }
 
 class _NotificationsScreenState extends State<NotificationsScreen> {
-    @override
+  @override
   void initState() {
     super.initState();
     context.read<NotificationsCubit>().loadNotifications();
   }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Notifications'),
         actions: [
-          IconButton(
-            icon: const Icon(Icons.mark_as_unread),
-            onPressed: () => _markAllAsRead(context),
-            tooltip: 'Mark all as read',
+          BlocBuilder<NotificationsCubit, NotificationsState>(
+            builder: (context, state) {
+              if (state is NotificationsLoaded && state.unreadCount > 0) {
+                return Badge(
+                  label: Text(state.unreadCount.toString()),
+                  child: IconButton(
+                    icon: const Icon(Icons.mark_as_unread),
+                    onPressed: () => _markAllAsRead(context),
+                    tooltip: 'Mark all as read',
+                  ),
+                );
+              }
+              return IconButton(
+                icon: const Icon(Icons.mark_as_unread),
+                onPressed: () => _markAllAsRead(context),
+                tooltip: 'Mark all as read',
+              );
+            },
           ),
           IconButton(
             icon: const Icon(Icons.delete_sweep),
@@ -42,9 +56,9 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
       body: BlocConsumer<NotificationsCubit, NotificationsState>(
         listener: (context, state) {
           if (state is NotificationsError) {
-            ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-              content: Text(state.message),
-            ));
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(content: Text(state.message)),
+            );
           }
         },
         builder: (context, state) {
@@ -53,8 +67,7 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
           } else if (state is NotificationsLoaded) {
             if (state.notifications.isEmpty) {
               return const Center(
-                // child: Text('No notifications available'),
-                child: CircularProgressIndicator(),
+                child: Text('No notifications available'),
               );
             }
             return RefreshIndicator(
@@ -86,7 +99,7 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
               ),
             );
           }
-          return const Center(child: CircularProgressIndicator(),);
+          return const Center(child: CircularProgressIndicator());
         },
       ),
     );
@@ -133,10 +146,17 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
         );
       },
       child: Card(
+        color: notification.read ? Colors.grey[100] : Colors.white,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(12),
+          side: BorderSide(
+            color: notification.read 
+                ? Colors.grey[300]!
+                : Theme.of(context).primaryColor.withOpacity(0.3),
+            width: 1,
+          ),
         ),
-        elevation: 2,
+        elevation: notification.read ? 1 : 3,
         child: InkWell(
           borderRadius: BorderRadius.circular(12),
           onTap: () => _markAsReadAndNavigate(context, notification),
@@ -158,7 +178,9 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
                       child: Text(
                         notification.title,
                         style: TextStyle(
-                          fontWeight: FontWeight.bold,
+                          fontWeight: notification.read 
+                              ? FontWeight.normal 
+                              : FontWeight.bold,
                           color: notification.read ? Colors.grey : Colors.black,
                         ),
                       ),
@@ -166,22 +188,45 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
                     Text(
                       DateFormat('h:mm a').format(notification.createdAt),
                       style: TextStyle(
-                        color: Colors.grey[600],
+                        color: notification.read 
+                            ? Colors.grey[600] 
+                            : Theme.of(context).primaryColor,
                         fontSize: 12,
                       ),
                     ),
+                    if (!notification.read) ...[
+                      const SizedBox(width: 8),
+                      Container(
+                        width: 8,
+                        height: 8,
+                        decoration: BoxDecoration(
+                          color: Theme.of(context).primaryColor,
+                          shape: BoxShape.circle,
+                        ),
+                      ),
+                    ],
                   ],
                 ),
                 const SizedBox(height: 8),
-                Text(notification.body),
-                if (notification.data.type.isNotEmpty) ...[
+                Text(
+                  notification.body,
+                  style: TextStyle(
+                    color: notification.read ? Colors.grey[600] : Colors.grey[800],
+                  ),
+                ),
+                if (notification.data.type != NotificationType.unknown) ...[
                   const SizedBox(height: 8),
                   Chip(
                     label: Text(
-                      notification.data.type.replaceAll('_', ' ').toUpperCase(),
-                      style: const TextStyle(fontSize: 12),
+                      notification.data.type.displayName.toUpperCase(),
+                      style: TextStyle(
+                        fontSize: 12,
+                        color: notification.read ? Colors.grey : Colors.white,
+                      ),
                     ),
-                    backgroundColor: Colors.grey[200],
+                    backgroundColor: notification.read 
+                        ? Colors.grey[200] 
+                        : Theme.of(context).primaryColor,
                   ),
                 ],
               ],
@@ -192,16 +237,18 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
     );
   }
 
-  IconData _getNotificationIcon(String type) {
+  IconData _getNotificationIcon(NotificationType type) {
     switch (type) {
-      case 'ticket_created':
+      case NotificationType.ticketCreated:
         return Icons.add_alert;
-      case 'ticket_updated':
+      case NotificationType.ticketUpdated:
         return Icons.edit;
-      case 'ticket_assigned':
+      case NotificationType.ticketAssigned:
         return Icons.assignment_ind;
-      case 'ticket_resolved':
+      case NotificationType.ticketResolved:
         return Icons.check_circle;
+      case NotificationType.chat:
+        return Icons.chat;
       default:
         return Icons.notifications;
     }
@@ -211,11 +258,8 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
       BuildContext context, NotificationModel notification) {
     if (!notification.read) {
       context.read<NotificationsCubit>().markAsRead(notification.id);
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Marked as read')),
-      );
     }
-    // Add navigation logic here if needed
+    // Add navigation logic here based on notification type if needed
   }
 
   void _markAllAsRead(BuildContext context) {

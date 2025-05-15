@@ -1,5 +1,41 @@
 import 'package:flutter/foundation.dart';
 
+enum NotificationType {
+  systemNotification,
+  ticketCreated,
+  ticketUpdated,
+  ticketAssigned,
+  ticketResolved,
+  chat,
+  unknown;
+
+  factory NotificationType.fromString(String type) {
+    switch (type) {
+      case 'system_notification':
+        return NotificationType.systemNotification;
+      case 'ticket_created':
+        return NotificationType.ticketCreated;
+      case 'ticket_updated':
+        return NotificationType.ticketUpdated;
+      case 'ticket_assigned':
+        return NotificationType.ticketAssigned;
+      case 'ticket_resolved':
+        return NotificationType.ticketResolved;
+      case 'chat':
+        return NotificationType.chat;
+      default:
+        return NotificationType.unknown;
+    }
+  }
+
+  String get displayName {
+    return toString().split('.').last.replaceAllMapped(
+          RegExp(r'([A-Z])'),
+          (match) => ' ${match.group(1)}',
+        ).trim();
+  }
+}
+
 class NotificationModel {
   final String id;
   final String title;
@@ -28,7 +64,7 @@ class NotificationModel {
         seen: json['seen'] ?? false,
         body: json['body'] ?? '',
         data: NotificationData.fromJson(json['data'] ?? {}),
-        read: json['read'] ?? false, 
+        read: json['read'] ?? false,
       );
     } catch (e) {
       debugPrint('Error parsing NotificationModel: $e');
@@ -64,7 +100,7 @@ class NotificationModel {
 }
 
 class NotificationData {
-  final String type;
+  final NotificationType type;
   final int modelId;
 
   NotificationData({
@@ -74,13 +110,13 @@ class NotificationData {
 
   factory NotificationData.fromJson(Map<String, dynamic> json) {
     return NotificationData(
-      type: json['type'] ?? 'unknown',
+      type: NotificationType.fromString(json['type'] ?? 'unknown'),
       modelId: json['model_id'] ?? 0,
     );
   }
 
   NotificationData copyWith({
-    String? type,
+    NotificationType? type,
     int? modelId,
   }) {
     return NotificationData(
