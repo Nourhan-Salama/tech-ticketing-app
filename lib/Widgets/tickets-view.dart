@@ -148,7 +148,7 @@ class _TicketsListState extends State<TicketsList> {
                     statusColor: _getStatusColor(ticket.status),
                     ticketId: ticket.id,
                     showDivider: index < widget.tickets.length - 1,
-                    onChatPressed: () {},
+                   // onChatPressed: () {},
                     onFinishPressed: () => _finishTicket(context, ticket.id),
                   ),
                 ),

@@ -1,6 +1,4 @@
-import 'dart:io';
 import 'package:flutter/material.dart';
-import 'package:image_picker/image_picker.dart';
 
 class MessageInputField extends StatefulWidget {
   final Function(String) onSend;
@@ -13,116 +11,51 @@ class MessageInputField extends StatefulWidget {
 
 class _MessageInputFieldState extends State<MessageInputField> {
   final TextEditingController _controller = TextEditingController();
-  final ImagePicker _picker = ImagePicker();
-  File? _selectedImage;
+  bool _isComposing = false;
 
-  void _sendMessage() {
+  void _handleSubmit() {
     final text = _controller.text.trim();
-    if (text.isEmpty && _selectedImage == null) return;
+    if (text.isEmpty) return;
 
-    if (text.isNotEmpty) {
-      widget.onSend(text);
-    }
-
-    if (_selectedImage != null) {
-      // Handle image sending
-    }
-
+    widget.onSend(text);
     _controller.clear();
-    setState(() => _selectedImage = null);
-  }
-
-  void _showAttachmentOptions() {
-    showModalBottomSheet(
-      context: context,
-      builder: (context) => SafeArea(
-        child: Wrap(
-          children: [
-            ListTile(
-              leading: const Icon(Icons.camera_alt),
-              title: const Text('Camera'),
-              onTap: () => _pickImage(ImageSource.camera),
-            ),
-            ListTile(
-              leading: const Icon(Icons.photo),
-              title: const Text('Gallery'),
-              onTap: () => _pickImage(ImageSource.gallery),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Future<void> _pickImage(ImageSource source) async {
-    Navigator.pop(context);
-    final image = await _picker.pickImage(source: source);
-    if (image != null) {
-      setState(() => _selectedImage = File(image.path));
-    }
+    setState(() => _isComposing = false);
   }
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      children: [
-        if (_selectedImage != null)
-          Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: Stack(
-              children: [
-                Image.file(
-                  _selectedImage!,
-                  width: 150,
-                  height: 150,
-                  fit: BoxFit.cover,
-                ),
-                Positioned(
-                  top: 4,
-                  right: 4,
-                  child: GestureDetector(
-                    onTap: () => setState(() => _selectedImage = null),
-                    child: const CircleAvatar(
-                      radius: 12,
-                      backgroundColor: Colors.black54,
-                      child: Icon(Icons.close, size: 16, color: Colors.white),
-                    ),
-                  ),
-                )
-              ],
+    return Container(
+      margin: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+      padding: const EdgeInsets.symmetric(horizontal: 8),
+      decoration: BoxDecoration(
+        color: Colors.grey[200],
+        borderRadius: BorderRadius.circular(24),
+      ),
+      child: Row(
+        children: [
+          Expanded(
+            child: TextField(
+              controller: _controller,
+              decoration: const InputDecoration(
+                hintText: 'Type a message...',
+                border: InputBorder.none,
+                contentPadding: EdgeInsets.symmetric(horizontal: 16),
+              ),
+              onChanged: (text) {
+                setState(() => _isComposing = text.trim().isNotEmpty);
+              },
+              onSubmitted: (_) => _handleSubmit(),
             ),
           ),
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-          child: Row(
-            children: [
-              IconButton(
-                icon: const Icon(Icons.attach_file),
-                onPressed: _showAttachmentOptions,
-              ),
-              Expanded(
-                child: TextField(
-                  controller: _controller,
-                  decoration: InputDecoration(
-                    hintText: 'Type a message...',
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(24),
-                      borderSide: BorderSide.none,
-                    ),
-                    filled: true,
-                    fillColor: Colors.grey[200],
-                    contentPadding: const EdgeInsets.symmetric(horizontal: 16),
-                  ),
-                ),
-              ),
-              IconButton(
-                icon: const Icon(Icons.send),
-                onPressed: _sendMessage,
-              ),
-            ],
+          IconButton(
+            icon: Icon(
+              Icons.send,
+              color: _isComposing ? Colors.blue : Colors.grey,
+            ),
+            onPressed: _isComposing ? _handleSubmit : null,
           ),
-        ),
-      ],
+        ],
+      ),
     );
   }
 

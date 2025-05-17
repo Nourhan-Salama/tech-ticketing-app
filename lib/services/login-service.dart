@@ -49,6 +49,7 @@ class AuthService {
       );
 
       // Initialize Pusher with userId
+      final pusherService = PusherService();
       await PusherService.initPusher(userId: userId);
 
       return {

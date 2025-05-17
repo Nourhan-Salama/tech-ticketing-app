@@ -6,8 +6,9 @@ import 'package:http/http.dart' as http;
 import 'package:tech_app/Helper/enum-helper.dart';
 import 'package:tech_app/cubits/Conversations/conversation-cubit.dart';
 import 'package:tech_app/cubits/changePassword/change-pass-cubit.dart';
+import 'package:tech_app/cubits/chat/chat_cubit.dart';
 
-import 'package:tech_app/cubits/get-chat-cubit.dart';
+
 import 'package:tech_app/cubits/tickets/get-ticket-cubits.dart';
 import 'package:tech_app/cubits/login/login-cubit.dart';
 import 'package:tech_app/cubits/notifications/notifications-cubit.dart';
@@ -31,6 +32,7 @@ import 'package:tech_app/screens/splash-screen.dart';
 import 'package:tech_app/screens/user-dashboard.dart';
 import 'package:tech_app/services/conversations-service.dart';
 import 'package:tech_app/services/login-service.dart';
+import 'package:tech_app/services/message-service.dart';
 import 'package:tech_app/services/notifications-services.dart';
 import 'package:tech_app/services/resend-otp-api.dart';
 import 'package:tech_app/services/send-forget-pass-api.dart';
@@ -65,8 +67,7 @@ class TicketingApp extends StatelessWidget {
         RepositoryProvider(create: (_) => NotificationService()),
         RepositoryProvider(
           create: (context) => ConversationsService(
-            // storage: context.read<FlutterSecureStorage>(),
-            // client: context.read<http.Client>(),
+           
           ),
         ),
       ],
@@ -78,7 +79,7 @@ class TicketingApp extends StatelessWidget {
                 create: (context) =>
                     LoginCubit(authApi: context.read<AuthService>()),
               ),
-              BlocProvider(create: (_) => RichTextCubit()),
+             // BlocProvider(create: (_) => RichTextCubit()),
               BlocProvider(create: (_) => TicketsCubit(context.read<TicketService>())),
               BlocProvider(
                 create: (context) =>
@@ -87,8 +88,9 @@ class TicketingApp extends StatelessWidget {
               BlocProvider(create: (_) => ChangePasswordCubit()),
               BlocProvider(create: (context) => NotificationsCubit(context.read<NotificationService>())),
               BlocProvider(
-                create: (context) => ChatCubit(
-                  chatService: context.read<ConversationsService>(),
+                create: (context) => MessagesCubit(
+                  messagesService: context.read<MessagesService>(),
+                  
                 ),
               ),
               // Adding the ConversationsCubit here
@@ -128,7 +130,8 @@ class TicketingApp extends StatelessWidget {
                     ChatScreen.routeName: (context) {
       final args = ModalRoute.of(context)!.settings.arguments as Map<String, dynamic>;
       return ChatScreen(
-       // ticketId: args['ticketId'].toString(),
+        conversationId: args['conversationId'].toString(),
+       ticketId: args['ticketId'].toString(),
         userName: args['userName'].toString(),
         userId: args['userId'] as int,
       );

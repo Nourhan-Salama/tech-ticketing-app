@@ -1,7 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:tech_app/models/ticket-model.dart';
-import 'package:tech_app/screens/chat-screen.dart';
-import 'package:tech_app/screens/conversatins.dart'; 
 import 'package:tech_app/util/colors.dart';
 import 'package:tech_app/util/responsive-helper.dart';
 
@@ -13,7 +10,6 @@ class DataTableWidget extends StatelessWidget {
   final Color statusColor;
   final bool showDivider;
   final int ticketId;
-  final Function? onChatPressed;
   final VoidCallback? onFinishPressed;
 
   const DataTableWidget({
@@ -25,7 +21,6 @@ class DataTableWidget extends StatelessWidget {
     required this.statusColor,
     required this.ticketId,
     this.showDivider = false,
-    this.onChatPressed,
     this.onFinishPressed,
   });
 
@@ -147,7 +142,7 @@ class DataTableWidget extends StatelessWidget {
               ),
             ),
 
-            // Right: Popup Menu
+            // Right: Popup Menu (only close ticket)
             Expanded(
               flex: 1,
               child: PopupMenuButton<String>(
@@ -161,40 +156,12 @@ class DataTableWidget extends StatelessWidget {
                   ),
                   color: Colors.black,
                 ),
-                onSelected: (value) async {
-                  if (value == 'chat') {
-                    Navigator.of(context).push(
-                      MaterialPageRoute(
-                        builder: (_) => ChatScreen(
-                          userId: userId,
-                           ticketId: ticketId.toString(),
-                          userName: userName,
-                        ),
-                      ),
-                    );
-                  } else if (value == 'finish' && onFinishPressed != null) {
+                onSelected: (value) {
+                  if (value == 'finish' && onFinishPressed != null) {
                     _showFinishConfirmationDialog(context);
                   }
                 },
                 itemBuilder: (BuildContext context) => [
-                  PopupMenuItem<String>(
-                    value: 'chat',
-                    child: Row(
-                      children: [
-                        Icon(Icons.chat, color: ColorsHelper.darkBlue),
-                        SizedBox(width: 8),
-                        Text(
-                          'Chat',
-                          style: TextStyle(
-                            fontSize: ResponsiveHelper.responsiveTextSize(
-                              context,
-                              isMobile ? 14 : 16,
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
                   PopupMenuItem<String>(
                     value: 'finish',
                     child: Row(

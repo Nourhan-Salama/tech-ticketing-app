@@ -1,7 +1,5 @@
-// messages_service.dart
 import 'dart:convert';
 import 'package:http/http.dart' as http;
-
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:tech_app/models/chat_message.dart';
 
@@ -13,8 +11,6 @@ class MessagesService {
     required String conversationId,
     required String content,
     required MessageType type,
-    String? mediaUrl,
-    int? recordDuration,
     String? ticketId,
   }) async {
     try {
@@ -27,8 +23,6 @@ class MessagesService {
         body: json.encode({
           'content': content,
           'type': type.value,
-          'media': mediaUrl,
-          'record_duration': recordDuration,
           'ticket_id': ticketId,
         }),
       );
@@ -69,8 +63,8 @@ class MessagesService {
   }
 
   Map<String, String> _headers(String token) => {
-        'Authorization': 'Bearer $token',
-        'Content-Type': 'application/json',
-        'Accept': 'application/json',
-      };
+    'Authorization': 'Bearer $token',
+    'Content-Type': 'application/json',
+    'Accept': 'application/json',
+  };
 }

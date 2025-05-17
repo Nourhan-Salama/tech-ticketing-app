@@ -1,5 +1,3 @@
-
-
 import 'package:tech_app/models/chat_message.dart';
 
 abstract class MessagesState {}
@@ -26,4 +24,4 @@ class MessageError extends MessagesState {
   final String message;
 
   MessageError(this.message);
-}
+} 

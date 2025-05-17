@@ -7,10 +7,9 @@ class ConversationsService {
   static const String _baseUrl = 'https://graduation.arabic4u.org/api';
   final FlutterSecureStorage _secureStorage = FlutterSecureStorage();
 
-    Future<List<Conversation>> fetchConversations() async {
+  Future<List<Conversation>> fetchConversations() async {
     try {
-      String? token = await _secureStorage.read(key: 'access_token');
-      if (token == null) throw Exception('No access token found');
+      final token = await _getToken();
 
       final response = await http.get(
         Uri.parse('$_baseUrl/conversations'),
@@ -34,11 +33,9 @@ class ConversationsService {
 
   Future<Conversation?> getOrCreateConversation(int userId) async {
     try {
-      // First try to get existing conversation
       final existing = await getConversationWithUser(userId);
       if (existing != null) return existing;
 
-      // If no existing conversation, create new one
       return await createConversationWithUser(userId);
     } catch (e) {
       print('❌ Error in getOrCreateConversation: $e');
@@ -49,6 +46,7 @@ class ConversationsService {
   Future<Conversation?> getConversationWithUser(int userId) async {
     try {
       final token = await _getToken();
+
       final response = await http.get(
         Uri.parse('$_baseUrl/conversations/for?user_id=$userId'),
         headers: _headers(token),
@@ -72,6 +70,7 @@ class ConversationsService {
   Future<Conversation> createConversationWithUser(int userId) async {
     try {
       final token = await _getToken();
+
       final response = await http.post(
         Uri.parse('$_baseUrl/conversations'),
         headers: _headers(token),
@@ -94,6 +93,33 @@ class ConversationsService {
     }
   }
 
+  /// ✅ Store conversation (create it on the backend)
+  Future<Conversation> storeConversation(int userId) async {
+    try {
+      final token = await _getToken();
+
+      final response = await http.post(
+        Uri.parse('$_baseUrl/conversations'),
+        headers: _headers(token),
+        body: json.encode({
+          'type': 0,       // Private conversation
+          'user_id': userId,
+        }),
+      );
+
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        final data = json.decode(response.body);
+        if (data['data'] == null) throw Exception('No conversation returned');
+        return Conversation.fromJson(data['data']);
+      } else {
+        throw Exception('Failed to store conversation: ${response.statusCode}');
+      }
+    } catch (e) {
+      print('❌ Error in storeConversation: $e');
+      rethrow;
+    }
+  }
+
   Future<String> _getToken() async {
     final token = await _secureStorage.read(key: 'access_token');
     if (token == null) throw Exception('No access token found');
@@ -101,9 +127,10 @@ class ConversationsService {
   }
 
   Map<String, String> _headers(String token) => {
-    'Authorization': 'Bearer $token',
-    'Content-Type': 'application/json',
-    'Accept': 'application/json',
-  };
+        'Authorization': 'Bearer $token',
+        'Content-Type': 'application/json',
+        'Accept': 'application/json',
+      };
 }
+
 
