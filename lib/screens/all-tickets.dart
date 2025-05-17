@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:tech_app/Helper/app-bar.dart';
@@ -15,12 +17,34 @@ class AllTickets extends StatefulWidget {
 }
 
 class _AllTicketsState extends State<AllTickets> {
+  final TextEditingController _searchController = TextEditingController();
+  Timer? _searchDebounce;
+
   @override
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       print('🏁 Initializing tickets fetch...');
       context.read<TicketsCubit>().fetchTickets(refresh: true);
+    });
+    
+    _searchController.addListener(_onSearchChanged);
+  }
+
+  @override
+  void dispose() {
+    _searchController.removeListener(_onSearchChanged);
+    _searchController.dispose();
+    _searchDebounce?.cancel();
+    super.dispose();
+  }
+
+  void _onSearchChanged() {
+    if (_searchDebounce?.isActive ?? false) _searchDebounce?.cancel();
+    
+    _searchDebounce = Timer(const Duration(milliseconds: 500), () {
+      final query = _searchController.text.trim();
+      context.read<TicketsCubit>().searchTickets(query);
     });
   }
 
@@ -46,9 +70,6 @@ class _AllTicketsState extends State<AllTickets> {
           } else if (state is TicketsEmpty) {
             return Center(child: Text('No tickets found'));
           } else if (state is TicketsLoaded) {
-            if (state.tickets.isEmpty) {
-              return Center(child: Text('No tickets to show'));
-            }
             return SingleChildScrollView(
               child: Padding(
                 padding: EdgeInsets.symmetric(
@@ -70,6 +91,7 @@ class _AllTicketsState extends State<AllTickets> {
                       desktop: 32,
                     )),
                     TextField(
+                      controller: _searchController,
                       decoration: InputDecoration(
                         hintText: 'Search',
                         hintStyle: TextStyle(
@@ -94,14 +116,16 @@ class _AllTicketsState extends State<AllTickets> {
                       tablet: 24,
                       desktop: 32,
                     )),
-                    TicketsList(
-                      tickets: state.tickets,
-                      hasMore: state.hasMore,
-                      currentPage: state.currentPage,
-                      lastPage: state.lastPage,
-                      isFiltered: state.isFiltered,
-                    ),
-                  
+                    if (state.tickets.isEmpty)
+                      Center(child: Text('No tickets to show'))
+                    else
+                      TicketsList(
+                        tickets: state.tickets,
+                        hasMore: state.hasMore,
+                        currentPage: state.currentPage,
+                        lastPage: state.lastPage,
+                        isFiltered: state.isFiltered,
+                      ),
                     SizedBox(height: 32),
                   ],
                 ),

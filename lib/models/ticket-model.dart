@@ -27,7 +27,7 @@ class TicketModel {
       description: json['description'] as String,
       service: ServiceModel.fromJson(json['service']),
       user: UserModel.fromJson(json['user']),
-      manager: json['manager'] != null ? ManagerModel.fromJson(json['manager']) : null,
+      manager: json['manager'] != null ? ManagerModel.fromJson(json['manager']) :null,
       technician: json['technician'] != null ? TechnicianModel.fromJson(json['technician']) : null,
     );
   }

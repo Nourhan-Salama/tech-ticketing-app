@@ -49,13 +49,16 @@ class _TicketsListState extends State<TicketsList> {
     }
   }
 
-  Future<void> _navigateToTicketDetails(BuildContext context, int ticketId) async {
+  Future<void> _navigateToTicketDetails(BuildContext context, TicketModel ticket) async {
     try {
-      final ticketDetails = await context.read<TicketsCubit>().getTicketDetails(ticketId);
+      final ticketDetails = await context.read<TicketsCubit>().getTicketDetails(ticket.id);
       Navigator.push(
         context,
         MaterialPageRoute(
-          builder: (context) => TicketDetailsScreen(ticket: ticketDetails),
+          builder: (context) => TicketDetailsScreen(
+            ticket: ticketDetails,
+            userTicket: ticket, 
+          ),
         ),
       );
     } catch (e) {
@@ -136,25 +139,7 @@ class _TicketsListState extends State<TicketsList> {
                   ),
                 ),
                 child: GestureDetector(
-                   onTap: () async {
-                    try {
-                      final ticketService = context.read<TicketService>();
-                      final ticketDetails =
-                          await ticketService.getTicketDetails(ticket.id);
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) =>
-                              TicketDetailsScreen(ticket: ticketDetails),
-                        ),
-                      );
-                    } catch (e) {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(
-                            content: Text('Failed to load ticket details: $e')),
-                      );
-                    }
-                  },
+                  onTap: () => _navigateToTicketDetails(context, ticket),
                   child: DataTableWidget(
                     userId: ticket.user.id,
                     title: ticket.title,
@@ -163,12 +148,7 @@ class _TicketsListState extends State<TicketsList> {
                     statusColor: _getStatusColor(ticket.status),
                     ticketId: ticket.id,
                     showDivider: index < widget.tickets.length - 1,
-                    onChatPressed: () {
-                      // Implement chat functionality if needed
-                      // Navigator.push(context, MaterialPageRoute(
-                      //   builder: (context) => ChatScreen(ticketId: ticket.id),
-                      // ));
-                    },
+                    onChatPressed: () {},
                     onFinishPressed: () => _finishTicket(context, ticket.id),
                   ),
                 ),

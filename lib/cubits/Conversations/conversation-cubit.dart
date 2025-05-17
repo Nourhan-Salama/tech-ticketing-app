@@ -1,3 +1,4 @@
+
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:tech_app/cubits/Conversations/conversatins-state.dart';
 import 'package:tech_app/models/conversation-model.dart';
@@ -10,7 +11,6 @@ class ConversationsCubit extends Cubit<ConversationsState> {
       : _conversationsService = conversationsService ?? ConversationsService(),
         super(ConversationsInitial());
 
-  
   Future<void> loadConversations() async {
     emit(ConversationsLoading());
     try {
@@ -20,11 +20,10 @@ class ConversationsCubit extends Cubit<ConversationsState> {
         filteredConversations: conversations,
       ));
     } catch (e) {
-      emit(ConversationsError(e.toString()));
+      emit(ConversationsError('Failed to load conversations: ${e.toString()}'));
     }
   }
 
- 
   void filterConversations(String query) {
     if (state is! ConversationsLoaded) return;
     final current = state as ConversationsLoaded;
@@ -39,27 +38,35 @@ class ConversationsCubit extends Cubit<ConversationsState> {
     emit(current.copyWith(filteredConversations: filtered));
   }
 
- 
-  Future<Conversation?> getOrCreateConversationWithUser(int userId) async {
+   Future<Conversation?> getOrCreateConversationWithUser(int userId) async {
     try {
-      Conversation? existingConversation =
-          await _conversationsService.getConversationWithUser(userId);
-
-      if (existingConversation != null) {
-        return existingConversation;
-      }
-
-      Conversation newConversation =
-          await _conversationsService.createConversationWithUser(userId);
-
+      emit(ConversationsLoading());
+      final conversation = await _conversationsService.getOrCreateConversation(userId);
       
-      addConversationToState(newConversation);
-
-      return newConversation;
+      if (conversation != null) {
+        _emitLoadedWithConversation(conversation);
+        return conversation;
+      }
+      
+      throw Exception('Failed to get or create conversation');
     } catch (e) {
-      print('Error in getOrCreateConversationWithUser: $e');
+      emit(ConversationsError(e.toString()));
       return null;
     }
+  }
+
+  void _emitLoadedWithConversation(Conversation conversation) {
+    emit(ConversationsLoaded(
+      allConversations: [conversation],
+      filteredConversations: [conversation],
+    ));
+  }
+
+  void _emitLoadedStateWithConversation(Conversation conversation) {
+    emit(ConversationsLoaded(
+      allConversations: [conversation],
+      filteredConversations: [conversation],
+    ));
   }
 
   void addConversationToState(Conversation conversation) {

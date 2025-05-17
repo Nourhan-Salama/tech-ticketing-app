@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:tech_app/cubits/tickets/ticket-state.dart';
 import 'package:tech_app/models/ticket-details-model.dart';
@@ -12,6 +13,7 @@ class TicketsCubit extends Cubit<TicketsState> {
   int _lastPage = 1;
   bool _isLoading = false;
   bool _isFiltered = false;
+  String _currentSearchQuery = '';
 
   TicketsCubit(this._ticketService) : super(TicketsInitial());
 
@@ -29,6 +31,7 @@ class TicketsCubit extends Cubit<TicketsState> {
         _currentPage = 1;
         _allTickets.clear();
         _isFiltered = false;
+        _currentSearchQuery = '';
         emit(TicketsLoading());
       }
 
@@ -46,7 +49,13 @@ class TicketsCubit extends Cubit<TicketsState> {
       
       _currentPage = result['current_page'] as int;
       _lastPage = result['last_page'] as int;
-      _filteredTickets = List.from(_allTickets);
+      
+      // Apply current search if exists
+      if (_currentSearchQuery.isNotEmpty) {
+        _filteredTickets = _filterTickets(_allTickets, _currentSearchQuery);
+      } else {
+        _filteredTickets = List.from(_allTickets);
+      }
 
       print('✅ Loaded ${newTickets.length} tickets (Total: ${_allTickets.length})');
       print('📊 Current page: $_currentPage, Last page: $_lastPage');
@@ -64,6 +73,41 @@ class TicketsCubit extends Cubit<TicketsState> {
     } finally {
       _isLoading = false;
     }
+  }
+
+  void searchTickets(String query) {
+    _currentSearchQuery = query;
+    
+    if (query.isEmpty) {
+      _isFiltered = false;
+      emit(TicketsLoaded(
+        tickets: _allTickets,
+        hasMore: _currentPage < _lastPage,
+        currentPage: _currentPage,
+        lastPage: _lastPage,
+        isFiltered: false,
+      ));
+      return;
+    }
+
+    _isFiltered = true;
+    _filteredTickets = _filterTickets(_allTickets, query);
+    
+    emit(TicketsLoaded(
+      tickets: _filteredTickets,
+      hasMore: false,
+      currentPage: _currentPage,
+      lastPage: _lastPage,
+      isFiltered: true,
+    ));
+  }
+
+  List<TicketModel> _filterTickets(List<TicketModel> tickets, String query) {
+    final lowerCaseQuery = query.toLowerCase();
+    return tickets.where((ticket) {
+      return ticket.title.toLowerCase().contains(lowerCaseQuery) ||
+          ticket.id.toString().contains(lowerCaseQuery);
+    }).toList();
   }
 
   Future<TicketDetailsModel> getTicketDetails(int ticketId) async {

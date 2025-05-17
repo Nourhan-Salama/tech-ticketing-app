@@ -13,14 +13,15 @@ import 'package:tech_app/services/pusher-service.dart';
 
 
 class ChatScreen extends StatefulWidget {
+  static const String routeName = '/chat-screen';
   final String? conversationId;
-  final String ticketId;
+  final String? ticketId;
   final String userName;
-  final int userId;
+   final int userId;
 
   const ChatScreen({
     this.conversationId,
-    required this.ticketId,
+     this.ticketId,
     required this.userName,
     required this.userId,
     Key? key,

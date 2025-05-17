@@ -19,6 +19,7 @@ import 'package:tech_app/cubits/rich-text-cubit.dart';
 
 import 'package:tech_app/screens/all-tickets.dart';
 import 'package:tech_app/screens/chande-password.dart';
+import 'package:tech_app/screens/chat-screen.dart';
 import 'package:tech_app/screens/conversatins.dart';
 import 'package:tech_app/screens/create-new.dart';
 import 'package:tech_app/screens/edit-profile.dart';
@@ -110,10 +111,9 @@ class TicketingApp extends StatelessWidget {
                   final args = ModalRoute.of(context)!.settings.arguments 
                       as Map<String, dynamic>? ?? {};
                   
-                  return ConversationsScreen(
-                    // ticketId: args['ticketId'] as int,
-                    // userName: args['userName'] as String,
+                  return ConversationsScreen(        
                   );
+                  
                 },
                 EditProfileScreen.routeName: (_) => EditProfileScreen(),
                 Profile.routName: (_) => Profile(),
@@ -125,6 +125,14 @@ class TicketingApp extends StatelessWidget {
                     child: ResetPasswordScreen(),
                   );
                 },
+                    ChatScreen.routeName: (context) {
+      final args = ModalRoute.of(context)!.settings.arguments as Map<String, dynamic>;
+      return ChatScreen(
+       // ticketId: args['ticketId'].toString(),
+        userName: args['userName'].toString(),
+        userId: args['userId'] as int,
+      );
+    },
                 ChangePasswordScreen.routeName: (_) => ChangePasswordScreen(
                       handle: '',
                       verificationCode: '',
