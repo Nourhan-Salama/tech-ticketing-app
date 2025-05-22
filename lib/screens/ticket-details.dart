@@ -56,10 +56,12 @@ class TicketDetailsScreen extends StatelessWidget {
             context,
             '/chat-screen',
             arguments: {
+              'userType': 1,
               'conversationId': conversation!.id,
               'userId': userTicket.manager!.id,
               'userName': ticket.managerName ?? 'Manager',
               'ticketId': ticket.id,
+              'receiverId': userTicket.manager!.id, // Add this
             },
           );
         } else {
@@ -93,10 +95,12 @@ class TicketDetailsScreen extends StatelessWidget {
             context,
             '/chat-screen',
             arguments: {
+              'userType': 0,
               'conversationId': conversation!.id,
               'userId': userTicket.user.id,
               'userName': ticket.userName,
               'ticketId': ticket.id,
+               'receiverId': userTicket.user.id, // Add this
             },
           );
         } else {

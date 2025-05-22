@@ -5,9 +5,14 @@ import 'package:tech_app/services/message-service.dart';
 
 class MessagesCubit extends Cubit<MessagesState> {
   final MessagesService _messagesService;
+  final int userType;
+  final int currentUserId; // Add this
 
-  MessagesCubit({required MessagesService messagesService})
-      : _messagesService = messagesService,
+  MessagesCubit({
+    required MessagesService messagesService,
+    required this.userType,
+    required this.currentUserId, // Add this
+  })  : _messagesService = messagesService,
         super(MessagesInitial());
 
   Future<void> sendMessage({
@@ -15,6 +20,7 @@ class MessagesCubit extends Cubit<MessagesState> {
     required String content,
     required MessageType type,
     String? ticketId,
+    required int receiverId, // Add this
   }) async {
     try {
       emit(MessageSending());
@@ -24,6 +30,7 @@ class MessagesCubit extends Cubit<MessagesState> {
         content: content,
         type: type,
         ticketId: ticketId,
+        receiverId: receiverId, // Add this
       );
 
       if (state is MessagesLoaded) {
@@ -57,4 +64,68 @@ class MessagesCubit extends Cubit<MessagesState> {
       emit(MessagesLoaded([message]));
     }
   }
-} 
+}
+
+// import 'package:flutter_bloc/flutter_bloc.dart';
+// import 'package:tech_app/cubits/chat/chat_state.dart';
+// import 'package:tech_app/models/chat_message.dart';
+// import 'package:tech_app/services/message-service.dart';
+
+// class MessagesCubit extends Cubit<MessagesState> {
+//   final MessagesService _messagesService;
+//   final int userType;
+
+//    MessagesCubit({
+//     required MessagesService messagesService,
+//     required this.userType, 
+//   })  : _messagesService = messagesService,
+//         super(MessagesInitial());
+
+//   Future<void> sendMessage({
+//     required String conversationId,
+//     required String content,
+//     required MessageType type,
+//     String? ticketId,
+//   }) async {
+//     try {
+//       emit(MessageSending());
+      
+//       final message = await _messagesService.sendMessage(
+//         conversationId: conversationId,
+//         content: content,
+//         type: type,
+//         ticketId: ticketId,
+//       );
+
+//       if (state is MessagesLoaded) {
+//         final currentState = state as MessagesLoaded;
+//         emit(MessagesLoaded([message, ...currentState.messages]));
+//       } else {
+//         emit(MessagesLoaded([message]));
+//       }
+//     } catch (e) {
+//       emit(MessageError('Failed to send message: ${e.toString()}'));
+//       rethrow;
+//     }
+//   }
+
+//   Future<void> loadMessages(String conversationId) async {
+//     try {
+//       emit(MessagesLoading());
+      
+//       final messages = await _messagesService.fetchMessages(conversationId);
+//       emit(MessagesLoaded(messages));
+//     } catch (e) {
+//       emit(MessageError('Failed to load messages: ${e.toString()}'));
+//     }
+//   }
+
+//   void addNewMessage(ChatMessage message) {
+//     if (state is MessagesLoaded) {
+//       final currentState = state as MessagesLoaded;
+//       emit(MessagesLoaded([message, ...currentState.messages]));
+//     } else {
+//       emit(MessagesLoaded([message]));
+//     }
+//   }
+// } 

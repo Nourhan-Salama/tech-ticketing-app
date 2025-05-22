@@ -12,6 +12,7 @@ class MessagesService {
     required String content,
     required MessageType type,
     String? ticketId,
+     required int receiverId, // Add this
   }) async {
     try {
       final token = await _secureStorage.read(key: 'access_token');
@@ -24,6 +25,7 @@ class MessagesService {
           'content': content,
           'type': type.value,
           'ticket_id': ticketId,
+          'receiver_id': receiverId, // Add this
         }),
       );
 

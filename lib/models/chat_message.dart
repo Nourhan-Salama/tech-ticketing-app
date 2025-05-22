@@ -23,8 +23,13 @@ class ChatMessage {
   final int? recordDuration;
   final String? ticketId;
   final int? fileSize; // Added file size field for media messages
+ // final int senderId; // Add this
+  final int receiverId; // Add this
+  final int conversationId; // Add this
 
   ChatMessage({
+    required this.conversationId,
+    required this.receiverId,
     required this.id,
     this.content,
     required this.senderId,
@@ -41,6 +46,8 @@ class ChatMessage {
 
   factory ChatMessage.fromJson(Map<String, dynamic> json) {
     return ChatMessage(
+       receiverId: json['receiver_id'] ?? 0, // Add this
+      conversationId: json['conversation_id'] ?? 0, // Add this
       id: json['id'],
       content: json['content'],
       senderId: json['sender_id'] ?? 0,

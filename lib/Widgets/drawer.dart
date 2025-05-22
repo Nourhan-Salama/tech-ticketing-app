@@ -75,10 +75,12 @@ class _MyDrawerState extends State<MyDrawer> {
         routeName,
         (route) => false,
       );
-    } else if (routeName == ConversationsScreen.routeName) {
-      context.read<ConversationsCubit>().loadConversations();
-      Navigator.pushNamed(context, routeName);
-    } else {
+    }
+    //  else if (routeName == ConversationsScreen.routeName) {
+    //   context.read<ConversationsCubit>().loadConversations();
+    //   Navigator.pushNamed(context, routeName);
+    // }
+     else {
       Navigator.pushNamed(context, routeName);
     }
   }
@@ -132,13 +134,13 @@ class _MyDrawerState extends State<MyDrawer> {
               isSelected: currentRoute == AllTickets.routeName,
               onPressed: () => navigateToScreen(context, AllTickets.routeName),
             ),
-            TextIconButton(
-              icon: Icons.chat,
-              label: 'Chat',
-              isSelected: currentRoute == ConversationsScreen.routeName,
-              onPressed: () =>
-                  navigateToScreen(context, ConversationsScreen.routeName),
-            ),
+            // TextIconButton(
+            //   icon: Icons.chat,
+            //   label: 'Chat',
+            //   isSelected: currentRoute == ConversationsScreen.routeName,
+            //   onPressed: () =>
+            //       navigateToScreen(context, ConversationsScreen.routeName),
+            // ),
             const Spacer(),
             Align(
               child: TextIconButton(

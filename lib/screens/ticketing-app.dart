@@ -87,12 +87,12 @@ class TicketingApp extends StatelessWidget {
               ),
               BlocProvider(create: (_) => ChangePasswordCubit()),
               BlocProvider(create: (context) => NotificationsCubit(context.read<NotificationService>())),
-              BlocProvider(
-                create: (context) => MessagesCubit(
-                  messagesService: context.read<MessagesService>(),
+              // BlocProvider(
+              //   create: (context) => MessagesCubit(
+              //     messagesService: context.read<MessagesService>(),
                   
-                ),
-              ),
+              //   ),
+              // ),
               // Adding the ConversationsCubit here
               BlocProvider(
                 create: (context) => ConversationsCubit(
@@ -108,15 +108,15 @@ class TicketingApp extends StatelessWidget {
                 LoginScreen.routeName: (_) => LoginScreen(),
                 UserDashboard.routeName: (_) => UserDashboard(),
                 AllTickets.routeName: (_) => AllTickets(),
-                ConversationsScreen.routeName: (context) {
-                  // Get arguments passed to the route
-                  final args = ModalRoute.of(context)!.settings.arguments 
-                      as Map<String, dynamic>? ?? {};
+                // ConversationsScreen.routeName: (context) {
+                //   // Get arguments passed to the route
+                //   final args = ModalRoute.of(context)!.settings.arguments 
+                //       as Map<String, dynamic>? ?? {};
                   
-                  return ConversationsScreen(        
-                  );
+                //   return ConversationsScreen(        
+                //   );
                   
-                },
+                // },
                 EditProfileScreen.routeName: (_) => EditProfileScreen(),
                 Profile.routName: (_) => Profile(),
                 ResetPasswordScreen.routeName: (context) {
@@ -130,10 +130,12 @@ class TicketingApp extends StatelessWidget {
                     ChatScreen.routeName: (context) {
       final args = ModalRoute.of(context)!.settings.arguments as Map<String, dynamic>;
       return ChatScreen(
+        userType: args['userType'] as int,
         conversationId: args['conversationId'].toString(),
        ticketId: args['ticketId'].toString(),
         userName: args['userName'].toString(),
-        userId: args['userId'] as int,
+        userId: args['userId'] as int, 
+          receiverId: args['receiverId'] as int,
       );
     },
                 ChangePasswordScreen.routeName: (_) => ChangePasswordScreen(
