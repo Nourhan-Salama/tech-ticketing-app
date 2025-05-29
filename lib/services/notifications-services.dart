@@ -31,6 +31,9 @@ class NotificationService {
       'Accept': 'application/json',
     };
   }
+  Future<void> _handleUnauthorized() async {
+    await handleTokenRefresh();
+  }
 
   Future<List<NotificationModel>> getAllNotifications() async {
     try {
@@ -156,9 +159,32 @@ class NotificationService {
       throw Exception('Session expired. Please login again.');
     }
   }
+    Future<void> updateFcmToken(String fcmToken) async {
+    try {
+      final response = await http.patch(
+        Uri.parse('$_baseUrl/notifications/fcm_token'),
+        headers: await _headers,
+        body: json.encode({'fcm_token': fcmToken}),
+      );
+
+      if (response.statusCode == 200) {
+        final data = json.decode(response.body);
+        debugPrint('FCM token updated: ${data['message']}');
+      } else if (response.statusCode == 401) {
+        await _handleUnauthorized();
+        return updateFcmToken(fcmToken); // Retry after refreshing token
+      } else {
+        throw _handleError(response);
+      }
+    } catch (e) {
+      debugPrint('Error updating FCM Token: $e');
+      rethrow;
+    }
+  }
 
   Exception _handleError(http.Response response) {
     final errorData = json.decode(response.body);
     return Exception(errorData['message'] ?? 'Request failed with status ${response.statusCode}');
   }
 }
+

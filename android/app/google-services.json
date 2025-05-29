@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "355914430064",
+    "project_id": "ticketing-app-cf1fa",
+    "storage_bucket": "ticketing-app-cf1fa.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:355914430064:android:ab326d4d9c1f87fd8926b5",
+        "android_client_info": {
+          "package_name": "com.example.final_app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDx3dl1FyUZgZ0tSaDbK4h9j3x4TcJSySs"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:355914430064:android:a03f7b2b3660f16e8926b5",
+        "android_client_info": {
+          "package_name": "com.example.tech_app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDx3dl1FyUZgZ0tSaDbK4h9j3x4TcJSySs"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

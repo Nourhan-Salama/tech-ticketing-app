@@ -119,6 +119,7 @@ class TicketsCubit extends Cubit<TicketsState> {
       rethrow;
     }
   }
+  
 
   Future<void> goToPage(int page) async {
     if (page < 1 || page > _lastPage) {

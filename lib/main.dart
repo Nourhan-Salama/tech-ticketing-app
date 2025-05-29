@@ -1,3 +1,4 @@
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -6,6 +7,7 @@ import 'screens/ticketing-app.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
+   await Firebase.initializeApp(); 
 
   // Check if user is already logged in
   final secureStorage = const FlutterSecureStorage();

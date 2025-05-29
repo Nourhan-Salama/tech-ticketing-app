@@ -62,6 +62,10 @@ dependencies:
   pusher_channels_flutter: ^2.4.0
   fluttertoast: ^8.2.12
   audioplayers: ^6.4.0
+  pretty_http_logger: ^1.0.5
+  
+  firebase_messaging: ^15.2.6
+  firebase_core: ^3.13.1
 
 
   
