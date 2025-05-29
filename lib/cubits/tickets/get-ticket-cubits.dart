@@ -74,6 +74,7 @@ class TicketsCubit extends Cubit<TicketsState> {
       _isLoading = false;
     }
   }
+  
 
   void searchTickets(String query) {
     _currentSearchQuery = query;
@@ -120,6 +121,14 @@ class TicketsCubit extends Cubit<TicketsState> {
     }
   }
   
+ Future<TicketModel> getTicketById(int ticketId) async {
+  try {
+    final ticket = await _ticketService.getTicketById(ticketId);
+    return ticket;
+  } catch (e) {
+    throw Exception('Failed to fetch ticket: $e');
+  }
+}
 
   Future<void> goToPage(int page) async {
     if (page < 1 || page > _lastPage) {

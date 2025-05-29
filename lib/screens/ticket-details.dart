@@ -8,90 +8,90 @@ import 'package:tech_app/models/ticket-model.dart';
 import 'package:tech_app/util/colors.dart';
 
 class TicketDetailsScreen extends StatelessWidget {
-  final int? ticketId;
   final TicketDetailsModel ticket;
-  final TicketModel? userTicket; 
+  final TicketModel userTicket;
 
   const TicketDetailsScreen({
     Key? key,
-    this.ticketId,
     required this.ticket,
-    this.userTicket, // Now optional
+    required this.userTicket,
   }) : super(key: key);
+
+  Future<void> _handleChatWithManager(BuildContext context) async {
+    if (userTicket.manager == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('No manager assigned to this ticket')),
+      );
+      return;
+    }
+
+    final conversationsCubit = context.read<ConversationsCubit>();
+
+    try {
+      final conversation = await conversationsCubit.getOrCreateConversationWithUser(
+        userTicket.manager!.user.id,
+      );
+
+      if (!context.mounted) return;
+
+      if (conversation?.id != null) {
+        Navigator.pushNamed(
+          context,
+          '/chat-screen',
+          arguments: {
+            'userType': 1,
+            'conversationId': conversation!.id,
+            'userId': userTicket.manager!.user.id,
+            'userName': ticket.managerName ?? 'Manager',
+            'ticketId': ticket.id,
+            'receiverId': userTicket.manager!.user.id,
+          },
+        );
+      }
+    } catch (e) {
+      if (!context.mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Error: ${e.toString()}')),
+      );
+    }
+  }
+
+  Future<void> _handleChatWithUser(BuildContext context) async {
+    final conversationsCubit = context.read<ConversationsCubit>();
+
+    try {
+      final conversation = await conversationsCubit.getOrCreateConversationWithUser(
+        userTicket.user.id,
+      );
+
+      if (!context.mounted) return;
+
+      if (conversation?.id != null) {
+        Navigator.pushNamed(
+          context,
+          '/chat-screen',
+          arguments: {
+            'userType': 0,
+            'conversationId': conversation!.id,
+            'userId': userTicket.user.id,
+            'userName': ticket.userName,
+            'ticketId': ticket.id,
+            'receiverId': userTicket.user.id,
+          },
+        );
+      }
+    } catch (e) {
+      if (!context.mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Error: ${e.toString()}')),
+      );
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
     final screenWidth = MediaQuery.of(context).size.width;
     final screenHeight = MediaQuery.of(context).size.height;
-    final conversationsCubit = BlocProvider.of<ConversationsCubit>(context);
-
-    Future<void> _handleChatWithManager() async {
-      if (userTicket?.manager == null) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('No manager assigned to this ticket')),
-        );
-        return;
-      }
-
-      try {
-        final conversation = await conversationsCubit.getOrCreateConversationWithUser(
-          userTicket!.manager!.id,
-        );
-
-        if (conversation?.id != null) {
-          Navigator.pushNamed(
-            context,
-            '/chat-screen',
-            arguments: {
-              'userType': 1,
-              'conversationId': conversation!.id,
-              'userId': userTicket!.manager!.id,
-              'userName': ticket.managerName ?? 'Manager',
-              'ticketId': ticket.id,
-              'receiverId': userTicket!.manager!.id,
-            },
-          );
-        }
-      } catch (e) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error: ${e.toString()}')),
-        );
-      }
-    }
-
-    Future<void> _handleChatWithUser() async {
-      if (userTicket == null) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('No user information available')),
-        );
-        return;
-      }
-
-      try {
-        final conversation = await conversationsCubit.getOrCreateConversationWithUser(
-          userTicket!.user.id,
-        );
-
-        if (conversation?.id != null) {
-          Navigator.pushNamed(
-            context,
-            '/chat-screen',
-            arguments: {
-              'userType': 0,
-              'conversationId': conversation!.id,
-              'userId': userTicket!.user.id,
-              'userName': ticket.userName,
-              'ticketId': ticket.id,
-              'receiverId': userTicket!.user.id,
-            },
-          );
-        }
-      } catch (e) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error: ${e.toString()}')),
-        );
-      }
-    }
 
     return Scaffold(
       drawer: const MyDrawer(),
@@ -107,9 +107,9 @@ class TicketDetailsScreen extends StatelessWidget {
             Row(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Expanded(child: _buildInfoColumn(screenHeight, true)),
+                Expanded(child: _buildInfoColumn(context, screenHeight, true)),
                 SizedBox(width: screenWidth * 0.05),
-                Expanded(child: _buildInfoColumn(screenHeight, false)),
+                Expanded(child: _buildInfoColumn(context, screenHeight, false)),
               ],
             ),
             SizedBox(height: screenHeight * 0.02),
@@ -150,34 +150,36 @@ class TicketDetailsScreen extends StatelessWidget {
               ),
             ),
             SizedBox(height: screenHeight * 0.03),
-            if (userTicket != null) ...[
-              const Text(
-                'Quick Chat',
-                style: TextStyle(
-                  fontSize: 20,
-                  fontWeight: FontWeight.bold,
-                ),
+            const Text(
+              'Quick Chat',
+              style: TextStyle(
+                fontSize: 20,
+                fontWeight: FontWeight.bold,
               ),
-              SizedBox(height: screenHeight * 0.015),
-              Wrap(
-                spacing: 10,
-                runSpacing: 10,
-                children: [
-                  if (userTicket?.manager != null)
-                    ElevatedButton(
-                      onPressed: _handleChatWithManager,
+            ),
+            SizedBox(height: screenHeight * 0.015),
+            // هنا التعديل من Wrap إلى Column مع SizedBox بالأعلى
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                if (userTicket.manager != null)
+                  SizedBox(
+                    width: double.infinity,
+                    child: ElevatedButton(
+                      onPressed: () => _handleChatWithManager(context),
                       style: ElevatedButton.styleFrom(
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(8),
                         ),
                         backgroundColor: Colors.blue,
                         padding: const EdgeInsets.symmetric(
-                          horizontal: 20, 
+                          horizontal: 20,
                           vertical: 12,
                         ),
                       ),
                       child: const Row(
                         mainAxisSize: MainAxisSize.min,
+                        mainAxisAlignment: MainAxisAlignment.center,
                         children: [
                           Icon(Icons.chat, color: Colors.white),
                           SizedBox(width: 8),
@@ -191,20 +193,25 @@ class TicketDetailsScreen extends StatelessWidget {
                         ],
                       ),
                     ),
-                  ElevatedButton(
-                    onPressed: _handleChatWithUser,
+                  ),
+                SizedBox(height: 10),
+                SizedBox(
+                  width: double.infinity,
+                  child: ElevatedButton(
+                    onPressed: () => _handleChatWithUser(context),
                     style: ElevatedButton.styleFrom(
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(8),
                       ),
                       backgroundColor: Colors.green,
                       padding: const EdgeInsets.symmetric(
-                        horizontal: 20, 
+                        horizontal: 20,
                         vertical: 12,
                       ),
                     ),
                     child: const Row(
                       mainAxisSize: MainAxisSize.min,
+                      mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         Icon(Icons.chat, color: Colors.white),
                         SizedBox(width: 8),
@@ -218,16 +225,16 @@ class TicketDetailsScreen extends StatelessWidget {
                       ],
                     ),
                   ),
-                ],
-              ),
-            ],
+                ),
+              ],
+            ),
           ],
         ),
       ),
     );
   }
 
-  Widget _buildInfoColumn(double screenHeight, bool leftSide) {
+  Widget _buildInfoColumn(BuildContext context, double screenHeight, bool leftSide) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -290,7 +297,7 @@ class TicketDetailsScreen extends StatelessWidget {
         Container(
           padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
           decoration: BoxDecoration(
-            color: color.withOpacity(0.1), 
+            color: color.withOpacity(0.1),
             borderRadius: BorderRadius.circular(20),
           ),
           child: Text(
@@ -306,4 +313,5 @@ class TicketDetailsScreen extends StatelessWidget {
     );
   }
 }
+
 
