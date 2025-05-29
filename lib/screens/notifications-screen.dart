@@ -26,6 +26,8 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
 
   Future<void> _handleNotificationTap(
       BuildContext context, NotificationModel notification ) async {
+        // Don't handle tap if already seen
+    if (notification.seen) return;
     if (!notification.read) {
       await context.read<NotificationsCubit>().markAsRead(notification.id);
     }
@@ -75,6 +77,7 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
     }
   }
 
+
   Widget _buildNotificationCard(
       BuildContext context, NotificationModel notification) {
     return Dismissible(
@@ -114,20 +117,22 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
         );
       },
       child: Card(
-        color: notification.read ? Colors.grey[100] : Colors.white,
+        color: notification.seen ? Colors.grey[100] : Colors.white,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(12),
           side: BorderSide(
-            color: notification.read 
+            color: notification.seen 
                 ? Colors.grey[300]!
                 : Theme.of(context).primaryColor.withOpacity(0.3),
             width: 1,
           ),
         ),
-        elevation: notification.read ? 1 : 3,
+        elevation: notification.seen ? 1 : 3,
         child: InkWell(
           borderRadius: BorderRadius.circular(12),
-          onTap: () => _handleNotificationTap(context, notification, ),
+          onTap: notification.seen 
+              ? null  // Disable tap if seen
+              : () => _handleNotificationTap(context, notification),
           child: Padding(
             padding: const EdgeInsets.all(16),
             child: Column(
@@ -137,7 +142,7 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
                   children: [
                     Icon(
                       _getNotificationIcon(notification.data.type),
-                      color: notification.read
+                      color: notification.seen
                           ? Colors.grey
                           : Theme.of(context).primaryColor,
                     ),
@@ -146,23 +151,23 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
                       child: Text(
                         notification.title,
                         style: TextStyle(
-                          fontWeight: notification.read 
+                          fontWeight: notification.seen 
                               ? FontWeight.normal 
                               : FontWeight.bold,
-                          color: notification.read ? Colors.grey : Colors.black,
+                          color: notification.seen ? Colors.grey : Colors.black,
                         ),
                       ),
                     ),
                     Text(
                       DateFormat('h:mm a').format(notification.createdAt),
                       style: TextStyle(
-                        color: notification.read 
+                        color: notification.seen 
                             ? Colors.grey[600] 
                             : Theme.of(context).primaryColor,
                         fontSize: 12,
                       ),
                     ),
-                    if (!notification.read) ...[
+                    if (!notification.seen) ...[  // Only show dot if not seen
                       const SizedBox(width: 8),
                       Container(
                         width: 8,
@@ -179,7 +184,7 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
                 Text(
                   notification.body,
                   style: TextStyle(
-                    color: notification.read ? Colors.grey[600] : Colors.grey[800],
+                    color: notification.seen ? Colors.grey[600] : Colors.grey[800],
                   ),
                 ),
                 if (notification.data.type != NotificationType.unknown) ...[
@@ -189,10 +194,10 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
                       notification.data.type.displayName.toUpperCase(),
                       style: TextStyle(
                         fontSize: 12,
-                        color: notification.read ? Colors.grey : Colors.white,
+                        color: notification.seen ? Colors.grey : Colors.white,
                       ),
                     ),
-                    backgroundColor: notification.read 
+                    backgroundColor: notification.seen 
                         ? Colors.grey[200] 
                         : Theme.of(context).primaryColor,
                   ),
