@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
@@ -8,7 +9,7 @@ import 'screens/ticketing-app.dart';
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
    await Firebase.initializeApp(); 
-
+    await EasyLocalization.ensureInitialized();
   // Check if user is already logged in
   final secureStorage = const FlutterSecureStorage();
   final loggedUserId = await secureStorage.read(key: 'user_id');
@@ -32,6 +33,13 @@ Future<void> main() async {
     print('❌ Secure storage failed: $e');
   }
 
-  runApp(TicketingApp(sharedPreferences: preferences));
+ runApp(
+    EasyLocalization(
+      supportedLocales: const [Locale('en'), Locale('ar')],
+      path: 'assets/translations', // Path to your translation files
+      fallbackLocale: const Locale('en'),
+      child: TicketingApp(sharedPreferences: preferences),
+    ),
+  );
 }
 

@@ -1,17 +1,18 @@
-import 'dart:io';
-
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:tech_app/Helper/text-icon-button.dart';
-import 'package:tech_app/cubits/Conversations/conversation-cubit.dart';
+import 'package:tech_app/cubits/localization/localization-cubit.dart';
+
 import 'package:tech_app/screens/all-tickets.dart';
-import 'package:tech_app/screens/conversatins.dart';
+
 import 'package:tech_app/screens/login.dart';
 import 'package:tech_app/screens/user-dashboard.dart';
 import 'package:tech_app/services/logout-service.dart';
 import 'package:tech_app/util/colors.dart';
-
+import 'package:tech_app/util/responsive-helper.dart';
 
 class MyDrawer extends StatefulWidget {
   const MyDrawer({super.key});
@@ -75,12 +76,7 @@ class _MyDrawerState extends State<MyDrawer> {
         routeName,
         (route) => false,
       );
-    }
-    //  else if (routeName == ConversationsScreen.routeName) {
-    //   context.read<ConversationsCubit>().loadConversations();
-    //   Navigator.pushNamed(context, routeName);
-    // }
-     else {
+    } else {
       Navigator.pushNamed(context, routeName);
     }
   }
@@ -123,29 +119,28 @@ class _MyDrawerState extends State<MyDrawer> {
             const SizedBox(height: 40),
             TextIconButton(
               icon: Icons.dashboard,
-              label: 'Dashboard',
+              label: 'dashboard'.tr(),
               isSelected: currentRoute == UserDashboard.routeName,
               onPressed: () =>
                   navigateToScreen(context, UserDashboard.routeName),
             ),
             TextIconButton(
               icon: Icons.airplane_ticket,
-              label: 'All Tickets',
+              label: 'allTickets'.tr(),
               isSelected: currentRoute == AllTickets.routeName,
               onPressed: () => navigateToScreen(context, AllTickets.routeName),
             ),
-            // TextIconButton(
-            //   icon: Icons.chat,
-            //   label: 'Chat',
-            //   isSelected: currentRoute == ConversationsScreen.routeName,
-            //   onPressed: () =>
-            //       navigateToScreen(context, ConversationsScreen.routeName),
-            // ),
+            TextIconButton(
+              icon: Icons.language,
+              label: 'Language'.tr(),
+              isSelected: false,
+              onPressed: () => _showLanguageDialog(context),
+            ),
             const Spacer(),
             Align(
               child: TextIconButton(
                 icon: Icons.logout,
-                label: 'Logout',
+                label: 'logout'.tr(),
                 onPressed: () => _performLogout(context),
               ),
             ),
@@ -153,6 +148,46 @@ class _MyDrawerState extends State<MyDrawer> {
           ],
         ),
       ),
+    );
+  }
+
+  void _showLanguageDialog(BuildContext context) {
+    final localizationCubit = context.read<LocalizationCubit>();
+
+    showDialog(
+      context: context,
+      builder: (BuildContext dialogContext) {
+        return AlertDialog(
+          title: Text('chooseLanguage'.tr()),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              ListTile(
+                leading: const Icon(Icons.language),
+                title: const Text('English'),
+                onTap: () async {
+                  Navigator.pop(dialogContext);
+                  await localizationCubit.updateLocale('en');
+                  if (mounted) {
+                    context.setLocale(const Locale('en'));
+                  }
+                },
+              ),
+              ListTile(
+                leading: const Icon(Icons.language),
+                title: const Text('العربية'),
+                onTap: () async {
+                  Navigator.pop(dialogContext);
+                  await localizationCubit.updateLocale('ar');
+                  if (mounted) {
+                    context.setLocale(const Locale('ar'));
+                  }
+                },
+              ),
+            ],
+          ),
+        );
+      },
     );
   }
 
@@ -205,4 +240,5 @@ class _MyDrawerState extends State<MyDrawer> {
     );
   }
 }
+
 

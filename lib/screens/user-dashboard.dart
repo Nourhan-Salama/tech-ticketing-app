@@ -1,5 +1,6 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
+
 import 'package:fl_chart/fl_chart.dart';
 import 'package:tech_app/Helper/app-bar.dart';
 import 'package:tech_app/Helper/card-ticket.dart';
@@ -7,7 +8,7 @@ import 'package:tech_app/Widgets/drawer.dart';
 import 'package:tech_app/models/statistics-model.dart';
 import 'package:tech_app/services/statistics.dart';
 import 'package:tech_app/util/colors.dart';
-import 'package:tech_app/util/responsive-helper.dart';
+
 
 class UserDashboard extends StatefulWidget {
   static const String routeName = "/user-dashboard";
@@ -31,7 +32,7 @@ class _UserDashboardState extends State<UserDashboard> {
   Widget build(BuildContext context) {
     return Scaffold(
       drawer: const MyDrawer(),
-      appBar: const CustomAppBar(title: 'Dashboard'),
+      appBar: CustomAppBar(title: 'dashboard'.tr()),
       body: FutureBuilder<StatisticsModel>(
         future: _statisticsFuture,
         builder: (context, snapshot) {
@@ -40,7 +41,7 @@ class _UserDashboardState extends State<UserDashboard> {
           } else if (snapshot.hasError) {
             return Center(child: Text('Error: ${snapshot.error}'));
           } else if (!snapshot.hasData || snapshot.data == null) {
-            return const Center(child: Text('No data available'));
+            return Center(child: Text('noDataAvailable').tr());
           }
 
           final stats = snapshot.data!;
@@ -89,13 +90,13 @@ class _UserDashboardState extends State<UserDashboard> {
                   children: [
                     StatusCard(
                       icon: Icons.airplane_ticket,
-                      title: 'All Tickets',
+                      title: 'allTickets'.tr(),
                       value: stats.allTickets.toString(),
                       percentage: stats.allTickets*100,
                     ),
                     StatusCard(
                       icon: Icons.airplane_ticket,
-                      title: 'In Progress',
+                      title: 'inProgress'.tr(),
                       value: stats.inProcessingTickets.toString(),
                       percentage: stats.allTickets > 0
                           ? (stats.inProcessingTickets / stats.allTickets) * 100
@@ -103,7 +104,7 @@ class _UserDashboardState extends State<UserDashboard> {
                     ),
                     StatusCard(
                       icon: Icons.airplane_ticket,
-                      title: 'Closed Tickets',
+                      title: 'closedTickets'.tr(),
                       value: stats.closedTickets.toString(),
                       percentage: stats.allTickets > 0
                           ? (stats.closedTickets / stats.allTickets) * 100
@@ -111,9 +112,9 @@ class _UserDashboardState extends State<UserDashboard> {
                     ),
                     StatusCard(
                       icon: Icons.group,
-                      title: 'Users',
-                      value: (stats.users ?? 0).toString(),
-                      percentage: (stats.users ?? 0).toDouble() * 100,
+                      title: 'users'.tr(),
+                      value: stats.allTickets.toString(),
+                      percentage: stats.allTickets*100,
                     ),
                   ],
                 ),
@@ -138,9 +139,9 @@ class _UserDashboardState extends State<UserDashboard> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      const Text(
-                        'Daily Respond',
-                        style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold),
+                      Text(
+                        'dailyRespond'.tr(),
+                        style: const TextStyle(fontSize: 15, fontWeight: FontWeight.bold),
                       ),
                       const SizedBox(height: 12),
                       SizedBox(
@@ -175,7 +176,7 @@ class _UserDashboardState extends State<UserDashboard> {
                                   barGroups: dailyRespondData,
                                 ),
                               )
-                            : const Center(child: Text('No recent tickets data')),
+                            : Center(child: Text('noRecentTicketsData').tr()),
                       ),
                     ],
                   ),
@@ -201,9 +202,9 @@ class _UserDashboardState extends State<UserDashboard> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      const Text(
-                        'Annual tickets average',
-                        style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold),
+                      Text(
+                        'annualTicketsAverage'.tr(),
+                        style: const TextStyle(fontSize: 15, fontWeight: FontWeight.bold),
                       ),
                       const SizedBox(height: 12),
                       SizedBox(
@@ -290,7 +291,7 @@ class _UserDashboardState extends State<UserDashboard> {
                                   ],
                                 ),
                               )
-                            : const Center(child: Text('No annual tickets data')),
+                            : Center(child: Text('noAnnualTicketsData').tr()),
                       ),
                     ],
                   ),

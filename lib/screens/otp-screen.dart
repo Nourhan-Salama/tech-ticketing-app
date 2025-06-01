@@ -1,4 +1,5 @@
 
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:tech_app/Helper/Custom-big-button.dart';
@@ -13,6 +14,7 @@ import 'package:tech_app/services/resend-otp-api.dart';
 import 'package:tech_app/services/verify_user_auth.dart';
 import 'package:tech_app/util/colors.dart';
 import 'package:tech_app/util/responsive-helper.dart';
+import 'package:tech_app/util/translation-manager.dart';
 
 class OtpVerificationPage extends StatelessWidget {
   static const routeName = '/otp-page';
@@ -103,8 +105,8 @@ class OtpVerificationPage extends StatelessWidget {
   Widget _buildTitle(BuildContext context) {
     return Text(
       otpType == OtpType.verification
-          ? "Verify Your Account"
-          : "Reset Your Password",
+          ? "verifyYourAccount".tr()
+          : "Reset Your Password".tr(),
       style: TextStyle(
         fontSize: ResponsiveHelper.responsiveTextSize(context, 20),
         fontWeight: FontWeight.bold,
@@ -119,8 +121,8 @@ class OtpVerificationPage extends StatelessWidget {
       ),
       child: Text(
         otpType == OtpType.verification
-            ? "Enter the verification code sent to your email"
-            : "Enter the code to reset your password",
+            ? "enterVerificationCode".tr()
+            : "enterCodeToResetPassword".tr(),
         textAlign: TextAlign.center,
         style: TextStyle(
           fontSize: ResponsiveHelper.responsiveTextSize(context, 14),
@@ -153,8 +155,8 @@ class OtpVerificationPage extends StatelessWidget {
           ),
           child: SubmitButton(
             buttonText: otpType == OtpType.verification
-                ? 'Verify Account'
-                : 'Continue',
+                ? 'VerifvAccount'.tr()
+                : 'continue'.tr(),
             isEnabled: state is! OtpLoading,
             isLoading: state is OtpLoading,
             onPressed: () {

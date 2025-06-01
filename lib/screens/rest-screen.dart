@@ -1,4 +1,5 @@
 
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -10,6 +11,7 @@ import 'package:tech_app/cubits/resetPassword/rest-password-state.dart';
 import 'package:tech_app/screens/otp-screen.dart';
 import 'package:tech_app/services/send-forget-pass-api.dart';
 import 'package:tech_app/util/responsive-helper.dart';
+import 'package:tech_app/util/translation-manager.dart';
 
 
 class ResetPasswordScreen extends StatelessWidget {
@@ -117,7 +119,7 @@ class _ResetPasswordScreenContentState
     return Column(
       children: [
         Text(
-          'Reset Your Password',
+          'resetYourPassword'.tr(),
           textAlign: TextAlign.center,
           style: TextStyle(
             fontWeight: FontWeight.bold,
@@ -137,12 +139,12 @@ class _ResetPasswordScreenContentState
     return Column(
       children: [
         Text(
-          'We will send an email with',
+          'We will send an email with'.tr(),
           style: TextStyle(
               fontSize: ResponsiveHelper.responsiveTextSize(context, 14)),
         ),
         Text(
-          'instructions to reset password.',
+          'instructions to reset password.'.tr(),
           style: TextStyle(
               fontSize: ResponsiveHelper.responsiveTextSize(context, 14)),
         ),
@@ -154,10 +156,10 @@ class _ResetPasswordScreenContentState
     return BlocBuilder<ResetPasswordCubit, ResetPasswordState>(
       builder: (context, state) {
         return CustomTextField(
-          label: 'Email',
+          label: 'Email'.tr(),
           controller: _emailController,
           prefixIcon: Icons.email,
-          hintText: 'Enter your Email',
+          hintText: 'enterYourEmail'.tr(),
           keyboardType: TextInputType.emailAddress,
           onChanged: (value) {
             context.read<ResetPasswordCubit>().updateButtonState(value!);
@@ -190,7 +192,7 @@ class _ResetPasswordScreenContentState
                         .resetPassword(_emailController.text);
                   }
                 : null,
-            buttonText: 'Reset Password',
+            buttonText: 'resetButton'.tr(),
           ),
         );
       },

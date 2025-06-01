@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:tech_app/Widgets/data-tabel.dart';
@@ -41,11 +42,11 @@ class _TicketsListState extends State<TicketsList> {
 
   String _getStatusText(int status) {
     switch (status) {
-      case 0: return 'Pending';
-      case 1: return 'In Progress';
-      case 2: return 'Resolved';
-      case 3: return 'Closed';
-      default: return 'Unknown';
+      case 0: return 'Pending'.tr();
+      case 1: return 'In Progress'.tr();
+      case 2: return 'Resolved'.tr();
+      case 3: return 'Closed'.tr();
+      default: return 'Unknown'.tr();
     }
   }
 
@@ -63,7 +64,7 @@ class _TicketsListState extends State<TicketsList> {
       );
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Failed to load ticket details: $e')),
+        SnackBar(content: Text('failed_to_load_ticket $e'.tr())),
       );
     }
   }
@@ -73,18 +74,17 @@ class _TicketsListState extends State<TicketsList> {
       final success = await TicketService().finishTicket(ticketId);
       if (success) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Ticket closed successfully'),
+          SnackBar(
+            content: Text('closeTicketSuccess'.tr()),
             backgroundColor: Colors.green,
           ),
         );
-        // Refresh the tickets list
         context.read<TicketsCubit>().goToPage(widget.currentPage);
       }
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('Failed to close ticket: ${e.toString()}'),
+          content: Text('${'closeTicketError'.tr()}: ${e.toString()}'),
           backgroundColor: Colors.red,
         ),
       );
@@ -94,7 +94,7 @@ class _TicketsListState extends State<TicketsList> {
   @override
   Widget build(BuildContext context) {
     if (widget.tickets.isEmpty) {
-      return Container(height: 0);
+      return Center(child: Text('noTicketsFound'.tr()));
     }
 
     return Column(
@@ -148,7 +148,6 @@ class _TicketsListState extends State<TicketsList> {
                     statusColor: _getStatusColor(ticket.status),
                     ticketId: ticket.id,
                     showDivider: index < widget.tickets.length - 1,
-                  
                     onFinishPressed: () => _finishTicket(context, ticket.id),
                   ),
                 ),
@@ -164,7 +163,7 @@ class _TicketsListState extends State<TicketsList> {
               if (widget.currentPage > 1) ...[
                 ElevatedButton(
                   onPressed: () => context.read<TicketsCubit>().goToPage(widget.currentPage - 1),
-                  child: Text('Previous', style: TextStyle(color: Colors.white)),
+                  child: Text('Previous'.tr(), style: TextStyle(color: Colors.white)),
                   style: ElevatedButton.styleFrom(
                     backgroundColor: ColorsHelper.darkBlue,
                   ),
@@ -172,7 +171,7 @@ class _TicketsListState extends State<TicketsList> {
                 SizedBox(width: 16),
               ],
               Text(
-                'Page ${widget.currentPage} of ${widget.lastPage}',
+                '${'Page'.tr()} ${widget.currentPage} ${'of'.tr()} ${widget.lastPage}',
                 style: TextStyle(fontSize: 16, color: ColorsHelper.darkGrey),
               ),
               SizedBox(width: 16),
@@ -180,7 +179,7 @@ class _TicketsListState extends State<TicketsList> {
                 onPressed: widget.currentPage < widget.lastPage
                     ? () => context.read<TicketsCubit>().goToPage(widget.currentPage + 1)
                     : null,
-                child: Text('Next', style: TextStyle(color: Colors.white)),
+                child: Text('Next'.tr(), style: TextStyle(color: Colors.white)),
                 style: ElevatedButton.styleFrom(
                   backgroundColor: widget.currentPage < widget.lastPage
                       ? ColorsHelper.darkBlue

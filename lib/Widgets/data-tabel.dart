@@ -1,6 +1,8 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:tech_app/util/colors.dart';
 import 'package:tech_app/util/responsive-helper.dart';
+import 'package:tech_app/util/translation-manager.dart';
 
 class DataTableWidget extends StatelessWidget {
   final int userId;
@@ -157,19 +159,19 @@ class DataTableWidget extends StatelessWidget {
                   color: Colors.black,
                 ),
                 onSelected: (value) {
-                  if (value == 'finish' && onFinishPressed != null) {
+                  if (value == 'finish'.tr() && onFinishPressed != null) {
                     _showFinishConfirmationDialog(context);
                   }
                 },
                 itemBuilder: (BuildContext context) => [
                   PopupMenuItem<String>(
-                    value: 'finish',
+                    value: 'finish'.tr(),
                     child: Row(
                       children: [
                         Icon(Icons.check_circle, color: Colors.green),
                         SizedBox(width: 8),
                         Text(
-                          'Close Ticket',
+                          'closeTicket'.tr(),
                           style: TextStyle(
                             fontSize: ResponsiveHelper.responsiveTextSize(
                               context,
@@ -195,7 +197,7 @@ class DataTableWidget extends StatelessWidget {
       builder: (BuildContext context) {
         return AlertDialog(
           title: Text(
-            'Confirm Close Ticket',
+            'confirmCloseTicket'.tr(),
             style: TextStyle(
               fontSize: ResponsiveHelper.responsiveTextSize(
                 context,
@@ -205,7 +207,7 @@ class DataTableWidget extends StatelessWidget {
             ),
           ),
           content: Text(
-            'Are you sure you want to close this ticket?',
+            'closeTicketConfirmMessage'.tr(),
             style: TextStyle(
               fontSize: ResponsiveHelper.responsiveTextSize(
                 context,
@@ -217,7 +219,7 @@ class DataTableWidget extends StatelessWidget {
             TextButton(
               onPressed: () => Navigator.of(context).pop(),
               child: Text(
-                'Cancel',
+                'cancel'.tr(),
                 style: TextStyle(
                   color: ColorsHelper.darkBlue,
                   fontSize: ResponsiveHelper.responsiveTextSize(
@@ -235,7 +237,7 @@ class DataTableWidget extends StatelessWidget {
                 }
               },
               child: Text(
-                'Confirm',
+                'confirm'.tr(),
                 style: TextStyle(
                   color: Colors.red,
                   fontSize: ResponsiveHelper.responsiveTextSize(

@@ -1,11 +1,10 @@
-
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:tech_app/cubits/login/login-state.dart';
 import 'package:tech_app/services/login-service.dart';
 import 'package:tech_app/services/service-profile.dart';
-
 
 class LoginCubit extends Cubit<LoginState> {
   final AuthService authApi;
@@ -16,7 +15,7 @@ class LoginCubit extends Cubit<LoginState> {
 
   LoginCubit({
     required this.authApi,
-     this.profileService,
+    this.profileService,
     FlutterSecureStorage? storage,
   })  : secureStorage = storage ?? const FlutterSecureStorage(),
         super(LoginState.initial()) {
@@ -66,15 +65,15 @@ class LoginCubit extends Cubit<LoginState> {
     final emailRegex = RegExp(r"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$");
 
     if (email.isEmpty) {
-      emailError = 'Email cannot be empty';
+      emailError = 'email_empty'.tr();
     } else if (!emailRegex.hasMatch(email)) {
-      emailError = 'Invalid Email';
+      emailError = "email_invalid".tr();
     }
 
     if (password.isEmpty) {
-      passwordError = "Password cannot be empty";
+      passwordError = "password_empty".tr();
     } else if (password.length < 8) {
-      passwordError = "Password must be at least 8 characters";
+      passwordError = "password_short".tr();
     }
 
     isButtonEnabled = emailError == null &&
@@ -131,7 +130,6 @@ class LoginCubit extends Cubit<LoginState> {
             );
           }
 
-          // Update state with user data
           emit(state.copyWith(
             isLoading: false,
             isSuccess: true,
@@ -141,27 +139,25 @@ class LoginCubit extends Cubit<LoginState> {
           return;
         }
 
-        // Handle error cases
-        final errorMessage = response['message'] ?? 'Login failed';
+        final errorMessage = response['message'] ?? 'login_failed'.tr();
         emit(state.copyWith(
           isLoading: false,
-          errorMessage: errorMessage,
+          errorMessage: errorMessage.tr(),
         ));
         return;
       }
 
-      // Handle invalid response format
       emit(state.copyWith(
         isLoading: false,
-        errorMessage: 'Invalid server response format',
+        errorMessage: 'server_response_format'.tr(),
       ));
     } catch (e) {
       print('Login error: $e');
-      String errorMessage = 'Login failed';
+      String errorMessage = 'login_failed'.tr();
       if (e is FormatException) {
-        errorMessage = 'Invalid server response';
+        errorMessage = 'server_invalid_response'.tr();
       } else if (e.toString().contains('SocketException')) {
-        errorMessage = 'Network error. Please check your connection.';
+        errorMessage = 'network_error'.tr();
       }
 
       emit(state.copyWith(
@@ -180,6 +176,7 @@ class LoginCubit extends Cubit<LoginState> {
     return super.close();
   }
 }
+
 
 
 

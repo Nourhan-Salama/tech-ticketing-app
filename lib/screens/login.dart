@@ -1,13 +1,16 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:http/http.dart' as http;
 import 'package:tech_app/Helper/Custom-big-button.dart';
 import 'package:tech_app/Helper/custom-textField.dart';
+import 'package:tech_app/cubits/localization/localization-cubit.dart';
 import 'package:tech_app/cubits/login/login-cubit.dart';
 import 'package:tech_app/cubits/login/login-state.dart';
 import 'package:tech_app/screens/rest-screen.dart';
 import 'package:tech_app/screens/user-dashboard.dart';
+import 'package:tech_app/services/localization-service.dart';
 import 'package:tech_app/services/login-service.dart';
 import 'package:tech_app/services/service-profile.dart';
 import 'package:tech_app/util/colors.dart';
@@ -25,18 +28,24 @@ class _LoginScreenState extends State<LoginScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: BlocProvider(
-        create: (context) => LoginCubit(
-          authApi: AuthService(),
-          profileService: ProfileService(
-            client: http.Client(),
-            secureStorage: FlutterSecureStorage(),
+      body: MultiBlocProvider(
+        providers: [
+          BlocProvider(
+            create: (context) => LoginCubit(
+              authApi: AuthService(),
+              profileService: ProfileService(
+                client: http.Client(),
+                secureStorage: FlutterSecureStorage(),
+              ),
+            ),
           ),
-        ),
+          BlocProvider(
+            create: (context) => LocalizationCubit(LocalizationService()),
+          ),
+        ],
         child: BlocListener<LoginCubit, LoginState>(
           listener: (context, state) {
             if (state.isSuccess) {
-              // Clear any existing snackbars before navigation
               ScaffoldMessenger.of(context).clearSnackBars();
               Navigator.pushNamedAndRemoveUntil(
                 context,
@@ -90,7 +99,7 @@ class _LoginScreenState extends State<LoginScreen> {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Text(
-                "Welcome Back!",
+                "welcomeBack".tr(),
                 style: TextStyle(
                   fontSize: ResponsiveHelper.responsiveTextSize(context, 22),
                   fontWeight: FontWeight.bold,
@@ -99,7 +108,7 @@ class _LoginScreenState extends State<LoginScreen> {
               ),
               SizedBox(height: ResponsiveHelper.heightPercent(context, 0.01)),
               Text(
-                "To keep connected with us please login with your personal info",
+                "loginMessage".tr(),
                 textAlign: TextAlign.center,
                 style: TextStyle(
                   color: Colors.white70,
@@ -126,6 +135,8 @@ class _LoginScreenState extends State<LoginScreen> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
+         
+         
           _buildSignInText(context),
           SizedBox(height: ResponsiveHelper.heightPercent(context, 0.03)),
           _buildEmailField(context),
@@ -140,9 +151,13 @@ class _LoginScreenState extends State<LoginScreen> {
     );
   }
 
+  
+
+  
+
   Widget _buildSignInText(BuildContext context) {
     return Text(
-      "Sign In",
+      "login".tr(),
       style: TextStyle(
         fontSize: ResponsiveHelper.responsiveTextSize(context, 18),
         fontWeight: FontWeight.bold,
@@ -155,9 +170,9 @@ class _LoginScreenState extends State<LoginScreen> {
     return BlocBuilder<LoginCubit, LoginState>(
       builder: (context, state) {
         return CustomTextField(
-          label: 'Email',
+          label: 'Email'.tr(),
           controller: context.read<LoginCubit>().emailController,
-          hintText: 'Enter Your Email',
+          hintText: 'enterYourEmail'.tr(),
           prefixIcon: Icons.email,
           keyboardType: TextInputType.emailAddress,
           errorText: state.emailError,
@@ -171,9 +186,9 @@ class _LoginScreenState extends State<LoginScreen> {
     return BlocBuilder<LoginCubit, LoginState>(
       builder: (context, state) {
         return CustomTextField(
-          label: 'Password',
+          label: 'password'.tr(),
           controller: context.read<LoginCubit>().passwordController,
-          hintText: 'Enter your password',
+          hintText: 'enterYourPassword'.tr(),
           prefixIcon: Icons.lock,
           obscureText: state.obscurePassword,
           errorText: state.passwordError,
@@ -202,7 +217,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       .toggleRememberMe(value ?? false),
                 ),
                 Text(
-                  "Remember me",
+                  "rememberMe".tr(),
                   style: TextStyle(
                     fontSize: ResponsiveHelper.responsiveTextSize(context, 14),
                   ),
@@ -217,7 +232,7 @@ class _LoginScreenState extends State<LoginScreen> {
             MaterialPageRoute(builder: (context) => const ResetPasswordScreen()),
           ),
           child: Text(
-            "Forget Password?",
+            "forgetPassword".tr(),
             style: TextStyle(
               color: ColorsHelper.darkBlue,
               fontSize: ResponsiveHelper.responsiveTextSize(context, 14),
@@ -231,10 +246,8 @@ class _LoginScreenState extends State<LoginScreen> {
   Widget _buildSignInButton(BuildContext context) {
     return BlocBuilder<LoginCubit, LoginState>(
       builder: (context, state) {
-        // Handle error messages
         if (state.errorMessage != null) {
           WidgetsBinding.instance.addPostFrameCallback((_) {
-            // Clear any existing snackbars before showing new one
             ScaffoldMessenger.of(context).clearSnackBars();
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
@@ -260,15 +273,14 @@ class _LoginScreenState extends State<LoginScreen> {
             isEnabled: state.isButtonEnabled && !state.isLoading,
             onPressed: state.isButtonEnabled && !state.isLoading
                 ? () {
-                    // Clear any existing snackbars before login attempt
                     ScaffoldMessenger.of(context).clearSnackBars();
                     context.read<LoginCubit>().login();
                   }
                 : null,
-            buttonText: state.isLoading ? 'Loading...' : 'Sign In',
+            buttonText: state.isLoading ? 'loading'.tr() : 'login'.tr(),
           ),
         );
       },
     );
   }
-}
+}  

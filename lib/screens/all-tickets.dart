@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:tech_app/Helper/app-bar.dart';
@@ -8,6 +9,7 @@ import 'package:tech_app/Widgets/tickets-view.dart';
 import 'package:tech_app/cubits/tickets/get-ticket-cubits.dart';
 import 'package:tech_app/cubits/tickets/ticket-state.dart';
 import 'package:tech_app/util/responsive-helper.dart';
+
 
 class AllTickets extends StatefulWidget {
   static const routeName = '/all-tickets';
@@ -55,7 +57,7 @@ class _AllTicketsState extends State<AllTickets> {
     return Scaffold(
       backgroundColor: Colors.white,
       drawer: MyDrawer(),
-      appBar: CustomAppBar(title: 'All Tickets'),
+      appBar: CustomAppBar(title: 'allTickets'.tr()),
       body: BlocConsumer<TicketsCubit, TicketsState>(
         listener: (context, state) {
           if (state is TicketsError) {
@@ -68,7 +70,7 @@ class _AllTicketsState extends State<AllTickets> {
           } else if (state is TicketsError) {
             return Center(child: Text(state.message));
           } else if (state is TicketsEmpty) {
-            return Center(child: Text('No tickets found'));
+            return Center(child: Text('no_tickets_found'.tr()));
           } else if (state is TicketsLoaded) {
             return SingleChildScrollView(
               child: Padding(
@@ -93,7 +95,7 @@ class _AllTicketsState extends State<AllTickets> {
                     TextField(
                       controller: _searchController,
                       decoration: InputDecoration(
-                        hintText: 'Search',
+                        hintText: 'search_hint'.tr(),
                         hintStyle: TextStyle(
                           fontSize: ResponsiveHelper.responsiveTextSize(context, 16),
                         ),
@@ -117,7 +119,7 @@ class _AllTicketsState extends State<AllTickets> {
                       desktop: 32,
                     )),
                     if (state.tickets.isEmpty)
-                      Center(child: Text('No tickets to show'))
+                      Center(child: Text('no_tickets_to_show').tr())
                     else
                       TicketsList(
                         tickets: state.tickets,

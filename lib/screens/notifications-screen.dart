@@ -1,3 +1,5 @@
+
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
@@ -5,8 +7,7 @@ import 'package:tech_app/cubits/notifications/notifications-cubit.dart';
 import 'package:tech_app/cubits/notifications/notifications-stae.dart';
 import 'package:tech_app/cubits/tickets/get-ticket-cubits.dart';
 import 'package:tech_app/models/notifications-model.dart';
-import 'package:tech_app/models/ticket-details-model.dart';
-import 'package:tech_app/models/ticket-model.dart';
+
 import 'package:tech_app/screens/ticket-details.dart';
 import 'package:tech_app/util/colors.dart';
 
@@ -25,9 +26,9 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
   }
 
   Future<void> _handleNotificationTap(
-      BuildContext context, NotificationModel notification ) async {
-        // Don't handle tap if already seen
+      BuildContext context, NotificationModel notification) async {
     if (notification.seen) return;
+
     if (!notification.read) {
       await context.read<NotificationsCubit>().markAsRead(notification.id);
     }
@@ -52,8 +53,6 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
     try {
       final ticketDetails =
           await context.read<TicketsCubit>().getTicketDetails(ticketId);
- 
-          // Then get the full ticket model with all user data
       final fullTicket = await context.read<TicketsCubit>().getTicketById(ticketId);
 
       if (!mounted) return;
@@ -64,7 +63,7 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
         MaterialPageRoute(
           builder: (_) => TicketDetailsScreen(
             ticket: ticketDetails,
-             userTicket: fullTicket,
+            userTicket: fullTicket,
           ),
         ),
       );
@@ -76,7 +75,6 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
       );
     }
   }
-
 
   Widget _buildNotificationCard(
       BuildContext context, NotificationModel notification) {
@@ -95,16 +93,16 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
         return await showDialog(
           context: context,
           builder: (context) => AlertDialog(
-            title: const Text('Delete Notification'),
-            content: const Text('Are you sure you want to delete this notification?'),
+            title: Text('delete_notification_confirm_title'.tr()),
+            content:  Text('delete_notification_confirm_message'.tr()),
             actions: [
               TextButton(
                 onPressed: () => Navigator.of(context).pop(false),
-                child: const Text('Cancel'),
+                child: Text('cancel'.tr()),
               ),
               TextButton(
                 onPressed: () => Navigator.of(context).pop(true),
-                child: const Text('Delete', style: TextStyle(color: Colors.red)),
+                child: Text('delete'.tr(), style: const TextStyle(color: Colors.red)),
               ),
             ],
           ),
@@ -113,7 +111,7 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
       onDismissed: (_) {
         context.read<NotificationsCubit>().deleteNotification(notification.id);
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Notification deleted')),
+          SnackBar(content: Text('delete_notification_success'.tr())),
         );
       },
       child: Card(
@@ -131,7 +129,7 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
         child: InkWell(
           borderRadius: BorderRadius.circular(12),
           onTap: notification.seen 
-              ? null  // Disable tap if seen
+              ? null
               : () => _handleNotificationTap(context, notification),
           child: Padding(
             padding: const EdgeInsets.all(16),
@@ -167,7 +165,7 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
                         fontSize: 12,
                       ),
                     ),
-                    if (!notification.seen) ...[  // Only show dot if not seen
+                    if (!notification.seen) ...[
                       const SizedBox(width: 8),
                       Container(
                         width: 8,
@@ -230,7 +228,7 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
   void _markAllAsRead(BuildContext context) {
     context.read<NotificationsCubit>().markAllAsRead();
     ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('All notifications marked as read')),
+     SnackBar(content: Text('all_notifications_marked_read'.tr())),
     );
   }
 
@@ -238,22 +236,22 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Delete All Notifications'),
-        content: const Text('Are you sure you want to delete all notifications?'),
+        title: Text('delete_all_confirm_title'.tr()),
+        content:  Text('delete_all_confirm_message'.tr()),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(context).pop(),
-            child: const Text('Cancel'),
+            child: Text('cancel'.tr()),
           ),
           TextButton(
             onPressed: () {
               Navigator.of(context).pop();
               context.read<NotificationsCubit>().deleteAll();
               ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(content: Text('All notifications deleted')),
+                SnackBar(content: Text('all_notifications_deleted'.tr())),
               );
             },
-            child: const Text('Delete All', style: TextStyle(color: Colors.red)),
+            child: Text('delete_all'.tr(), style: TextStyle(color: Colors.red)),
           ),
         ],
       ),
@@ -271,7 +269,7 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Notifications'),
+        title:  Text('notifications_title'.tr()),
         actions: [
           BlocBuilder<NotificationsCubit, NotificationsState>(
             builder: (context, state) {
@@ -281,28 +279,28 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
                   child: IconButton(
                     icon: const Icon(Icons.mark_as_unread),
                     onPressed: () => _markAllAsRead(context),
-                    tooltip: 'Mark all as read',
+                    tooltip: 'mark_all_read'.tr(),
                   ),
                 );
               }
               return IconButton(
                 icon: const Icon(Icons.mark_as_unread),
                 onPressed: () => _markAllAsRead(context),
-                tooltip: 'Mark all as read',
+                tooltip: 'mark_all_read'.tr(),
               );
             },
           ),
           IconButton(
             icon: const Icon(Icons.delete_sweep),
             onPressed: () => _deleteAllNotifications(context),
-            tooltip: 'Delete all',
+            tooltip: 'delete_all'.tr(),
           ),
         ],
       ),
       body: isLoading
           ? const Center(child: CircularProgressIndicator())
           : (notifications.isEmpty
-              ? const Center(child: Text('No notifications available'))
+              ?  Center(child: Text('no_notifications'.tr()))
               : RefreshIndicator(
                   onRefresh: () =>
                       context.read<NotificationsCubit>().loadNotifications(),

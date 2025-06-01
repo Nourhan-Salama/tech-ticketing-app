@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:tech_app/Helper/app-bar.dart';
@@ -5,7 +6,7 @@ import 'package:tech_app/Widgets/drawer.dart';
 import 'package:tech_app/cubits/Conversations/conversation-cubit.dart';
 import 'package:tech_app/models/ticket-details-model.dart';
 import 'package:tech_app/models/ticket-model.dart';
-import 'package:tech_app/util/colors.dart';
+
 
 class TicketDetailsScreen extends StatelessWidget {
   final TicketDetailsModel ticket;
@@ -95,7 +96,7 @@ class TicketDetailsScreen extends StatelessWidget {
 
     return Scaffold(
       drawer: const MyDrawer(),
-      appBar: CustomAppBar(title: 'Ticket Details'),
+      appBar: CustomAppBar(title: 'ticketDetails'.tr()),
       body: SingleChildScrollView(
         padding: EdgeInsets.symmetric(
           horizontal: screenWidth * 0.05,
@@ -113,9 +114,9 @@ class TicketDetailsScreen extends StatelessWidget {
               ],
             ),
             SizedBox(height: screenHeight * 0.02),
-            const Text(
-              'Description',
-              style: TextStyle(
+            Text(
+              'description_label'.tr(),
+              style: const TextStyle(
                 fontSize: 20,
                 fontWeight: FontWeight.bold,
               ),
@@ -150,15 +151,15 @@ class TicketDetailsScreen extends StatelessWidget {
               ),
             ),
             SizedBox(height: screenHeight * 0.03),
-            const Text(
-              'Quick Chat',
-              style: TextStyle(
+            Text(
+              'quick_chat_label'.tr(),
+              style: const TextStyle(
                 fontSize: 20,
                 fontWeight: FontWeight.bold,
               ),
             ),
             SizedBox(height: screenHeight * 0.015),
-            // هنا التعديل من Wrap إلى Column مع SizedBox بالأعلى
+       
             Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
@@ -177,15 +178,15 @@ class TicketDetailsScreen extends StatelessWidget {
                           vertical: 12,
                         ),
                       ),
-                      child: const Row(
+                      child: Row(
                         mainAxisSize: MainAxisSize.min,
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          Icon(Icons.chat, color: Colors.white),
-                          SizedBox(width: 8),
+                          const Icon(Icons.chat, color: Colors.white),
+                          const SizedBox(width: 8),
                           Text(
-                            'Chat with Manager',
-                            style: TextStyle(
+                            'chat_with_manager_button'.tr(),
+                            style: const TextStyle(
                               color: Colors.white,
                               fontSize: 14,
                             ),
@@ -209,15 +210,15 @@ class TicketDetailsScreen extends StatelessWidget {
                         vertical: 12,
                       ),
                     ),
-                    child: const Row(
+                    child: Row(
                       mainAxisSize: MainAxisSize.min,
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        Icon(Icons.chat, color: Colors.white),
-                        SizedBox(width: 8),
+                        const Icon(Icons.chat, color: Colors.white),
+                        const SizedBox(width: 8),
                         Text(
-                          'Chat with User',
-                          style: TextStyle(
+                          'chat_with_user_button'.tr(),
+                          style: const TextStyle(
                             color: Colors.white,
                             fontSize: 14,
                           ),
@@ -239,19 +240,19 @@ class TicketDetailsScreen extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         if (leftSide) ...[
-          _buildInfoItem('Ticket ID', '${ticket.id}'),
+          _buildInfoItem('ticket_id_label'.tr(), '${ticket.id}'),
           SizedBox(height: screenHeight * 0.02),
           _buildStatusItem(ticket.statusText, ticket.statusColor),
           SizedBox(height: screenHeight * 0.02),
-          _buildInfoItem('Service', ticket.serviceName),
+          _buildInfoItem('service_label'.tr(), ticket.serviceName),
           SizedBox(height: screenHeight * 0.02),
-          _buildInfoItem('Manager', ticket.managerName ?? 'No Manager'),
+          _buildInfoItem('manager_label'.tr(), ticket.managerName ?? 'no_manager_text'.tr()),
         ] else ...[
-          _buildInfoItem('Title', ticket.title),
+          _buildInfoItem('title_label'.tr(), ticket.title),
           SizedBox(height: screenHeight * 0.02),
-          _buildInfoItem('User', ticket.userName),
+          _buildInfoItem('user_label'.tr(), ticket.userName),
           SizedBox(height: screenHeight * 0.02),
-          _buildInfoItem('Technician', ticket.technicianName ?? 'No Technician'),
+          _buildInfoItem('technician_label'.tr(), ticket.technicianName ?? 'no_technician_text'.tr()),
         ],
       ],
     );
@@ -286,7 +287,7 @@ class TicketDetailsScreen extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          'Status',
+          'status_label'.tr(),
           style: TextStyle(
             color: Colors.grey[600],
             fontSize: 16,
@@ -301,7 +302,7 @@ class TicketDetailsScreen extends StatelessWidget {
             borderRadius: BorderRadius.circular(20),
           ),
           child: Text(
-            status,
+            status.tr(),
             style: TextStyle(
               color: color,
               fontSize: 14,

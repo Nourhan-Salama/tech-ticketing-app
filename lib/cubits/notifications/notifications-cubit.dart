@@ -1,9 +1,10 @@
-import 'package:flutter/material.dart';
+
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:tech_app/cubits/notifications/notifications-stae.dart';
-
 import 'package:tech_app/models/notifications-model.dart';
 import 'package:tech_app/services/notifications-services.dart';
+import 'package:tech_app/util/translation-manager.dart';
 
 class NotificationsCubit extends Cubit<NotificationsState> {
   final NotificationService _service;
@@ -35,17 +36,18 @@ class NotificationsCubit extends Cubit<NotificationsState> {
           await _service.handleTokenRefresh();
           await loadNotifications();
         } catch (refreshError) {
-          emit(NotificationsError('Session expired. Please login again.'));
+          emit(NotificationsError('Session expired. Please login again.'.tr()));
         }
       } else {
-        emit(NotificationsError('Failed to load notifications: ${e.toString()}'));
+        emit(NotificationsError('${'Failed to load notifications:'.tr()} ${e.toString()}'));
+
       }
     }
   }
 
   List<NotificationModel> get technicianNotifications => _technicianNotifications;
 
-   Future<void> markAsRead(String notificationId) async {
+  Future<void> markAsRead(String notificationId) async {
     if (state is NotificationsLoaded) {
       final currentState = state as NotificationsLoaded;
 
@@ -56,14 +58,14 @@ class NotificationsCubit extends Cubit<NotificationsState> {
       if (notificationIndex == -1) return;
 
       final notification = currentState.notifications[notificationIndex];
-      if (notification.seen) return;  // Check seen instead of read
+      if (notification.seen) return;
 
       try {
         await _service.markAsRead(notificationId);
 
         final updatedNotification = notification.copyWith(
           read: true,
-          seen: true,  // Also update seen
+          seen: true,
         );
         final updatedNotifications = [...currentState.notifications];
         updatedNotifications[notificationIndex] = updatedNotification;
@@ -72,17 +74,32 @@ class NotificationsCubit extends Cubit<NotificationsState> {
 
         emit(NotificationsLoaded(updatedNotifications, updatedUnreadCount));
       } catch (e) {
-        emit(NotificationsError('Failed to mark as read: ${e.toString()}'));
+       emit(NotificationsError('${'Failed to mark as read:'.tr()} ${e.toString()}'));
+
       }
     }
   }
 
   Future<void> markAllAsRead() async {
-    try {
-      await _service.markAllAsRead();
-      await loadNotifications();
-    } catch (e) {
-      emit(NotificationsError('Failed to mark all as read: ${e.toString()}'));
+    if (state is NotificationsLoaded) {
+      final currentState = state as NotificationsLoaded;
+      
+      try {
+        // Mark all as read in the backend
+        await _service.markAllAsRead();
+
+        // Update all notifications locally
+        final updatedNotifications = currentState.notifications.map((notification) {
+          return notification.copyWith(
+            read: true,
+            seen: true,
+          );
+        }).toList();
+
+        emit(NotificationsLoaded(updatedNotifications, 0));
+      } catch (e) {
+       emit(NotificationsError('${'Failed to mark all as read:'.tr()} ${e.toString()}'));
+      }
     }
   }
 
@@ -91,7 +108,8 @@ class NotificationsCubit extends Cubit<NotificationsState> {
       await _service.deleteNotification(id);
       await loadNotifications();
     } catch (e) {
-      emit(NotificationsError('Failed to delete notification: ${e.toString()}'));
+      emit(NotificationsError('${'Failed to delete notification:'.tr()} ${e.toString()}'));
+
     }
   }
 
@@ -100,9 +118,8 @@ class NotificationsCubit extends Cubit<NotificationsState> {
       await _service.deleteAllNotifications();
       await loadNotifications();
     } catch (e) {
-      emit(NotificationsError('Failed to delete all notifications: ${e.toString()}'));
+     emit(NotificationsError('${'Failed to delete all notifications:'.tr()} ${e.toString()}'));
+
     }
   }
 }
-
-

@@ -1,4 +1,5 @@
 
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:tech_app/Helper/Custom-big-button.dart';
@@ -6,6 +7,7 @@ import 'package:tech_app/Helper/custom-textField.dart';
 import 'package:tech_app/cubits/changePassword/change-pass-cubit.dart';
 import 'package:tech_app/cubits/changePassword/change-pass-state.dart';
 import 'package:tech_app/util/responsive-helper.dart';
+import 'package:tech_app/util/translation-manager.dart';
 
 
 class ChangePasswordScreen extends StatelessWidget {
@@ -37,7 +39,7 @@ class ChangePasswordScreen extends StatelessWidget {
                
                     ScaffoldMessenger.of(context).showSnackBar(
                       SnackBar(
-                        content: Text('Password reset successful!'),
+                        content: Text('password_reset_successful'.tr()),
                         backgroundColor: Colors.green,
                       ),
                     );
@@ -64,7 +66,7 @@ class ChangePasswordScreen extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
                       Text(
-                        'Create New Password',
+                        'create_new_password_title'.tr(),
                         style: TextStyle(
                           fontSize: ResponsiveHelper.responsiveTextSize(context, 24),
                           fontWeight: FontWeight.bold,
@@ -72,7 +74,7 @@ class ChangePasswordScreen extends StatelessWidget {
                       ),
                       SizedBox(height: ResponsiveHelper.heightPercent(context, 0.02)),
                       Text(
-                        'Your new password must be at least 8 characters and different from the previous one.',
+                        'password_instruction'.tr(),
                         textAlign: TextAlign.center,
                         style: TextStyle(
                           fontSize: ResponsiveHelper.responsiveTextSize(context, 16),
@@ -81,17 +83,17 @@ class ChangePasswordScreen extends StatelessWidget {
                       ),
                       SizedBox(height: ResponsiveHelper.heightPercent(context, 0.04)),
                       CustomTextField(
-                        label: 'New Password',
+                        label: 'new_password_label'.tr(),
                         obscureText: true,
-                        hintText: 'Enter your new password',
+                        hintText: 'new_password_hint'.tr(),
                         prefixIcon: Icons.lock,
                         controller: cubit.passwordController,
                         onChanged: (_) => cubit.validatePasswords(),
                       ),
                       SizedBox(height: ResponsiveHelper.heightPercent(context, 0.02)),
                       CustomTextField(
-                        label: 'Confirm Password',
-                        hintText: 'Confirm your password',
+                        label: 'confirm_password_label'.tr(),
+                        hintText: 'confirm_password_hint'.tr(),
                         prefixIcon: Icons.lock,
                         obscureText: true,
                         controller: cubit.confirmPasswordController,
@@ -106,7 +108,7 @@ class ChangePasswordScreen extends StatelessWidget {
                                   verificationCode: verificationCode,
                                 )
                             : null,
-                        buttonText: isLoading ? 'Loading...' : 'Sign In',
+                        buttonText: isLoading ? 'loading_text'.tr() : 'sign_in_button'.tr(),
                       ),
                     ],
                   );
